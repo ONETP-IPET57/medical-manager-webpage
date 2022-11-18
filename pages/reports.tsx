@@ -1,5 +1,5 @@
 import { Flex, Grid, GridItem, Heading, HStack } from '@chakra-ui/react';
-import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { MainContainer } from '../components/layouts/MainContainer';
 import { Nurses } from './nurses';
 import { Patients } from './patients';
@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 import { BarChartChakra } from '../components/ChartsChakra';
 import type { ChartData, ChartOptions } from 'chart.js';
 import { getAge } from '../lib/date';
+import { unstable_getServerSession } from 'next-auth';
+import { authOptions } from './api/auth/[...nextauth]';
 
 const Reports = ({ dataZones, dataNurses, dataPatients }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [dataChart, setDataChart] = useState<ChartData<'bar'> | undefined>(undefined);
@@ -97,20 +99,44 @@ const Reports = ({ dataZones, dataNurses, dataPatients }: InferGetServerSideProp
 };
 
 // This gets called on every request
-export const getServerSideProps: GetServerSideProps<{ dataZones: Array<Zones> | null; dataNurses: Array<Nurses> | null; dataPatients: Array<Patients> | null }> = async (context: any) => {
+export const getServerSideProps: GetServerSideProps<{ dataZones: Array<Zones> | null; dataNurses: Array<Nurses> | null; dataPatients: Array<Patients> | null }> = async (context: GetServerSidePropsContext) => {
   try {
-    // Fetch data from external API
-    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/zonas`);
+    const { req, res } = context;
+    const session = await unstable_getServerSession(req, res, authOptions);
 
-    const dataZones: Array<Zones> = await res.data;
+    if (!session) {
+      return {
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
+      };
+    }
 
     // Fetch data from external API
-    const resNurses = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/enfermeros`);
+    const resZonas = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/zonas`, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    });
+
+    const dataZones: Array<Zones> = await resZonas.data;
+
+    // Fetch data from external API
+    const resNurses = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/enfermeros`, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    });
 
     const dataNurses: Array<Nurses> = await resNurses.data;
 
     // Fetch data from external API
-    const resPatients = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pacientes`);
+    const resPatients = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pacientes`, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    });
 
     const dataPatients: Array<Patients> = await resPatients.data;
 

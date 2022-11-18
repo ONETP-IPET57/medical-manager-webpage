@@ -3,13 +3,14 @@ import { Button, Divider, Flex, FormControl, FormLabel, Heading, HStack, Input, 
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
 import { MainContainer } from '../../components/layouts/MainContainer';
-import type { Nurses } from '.';
+import { Nurses, nurseState } from '.';
 import { BiPhone } from 'react-icons/bi';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { unstable_getServerSession } from 'next-auth/next';
 import { authOptions } from '../api/auth/[...nextauth]';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
+import { formatDateToSQL, formatDateToHTMLInput } from '../../lib/date';
 
 type Inputs = {
   dni_enfermero: string;
@@ -18,6 +19,7 @@ type Inputs = {
   sexo: string;
   telefono: string;
   estado: number;
+  fecha_nac: string;
 };
 
 const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
@@ -39,7 +41,7 @@ const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSide
       return axios
         .post(
           `/api/backend/enfermeros/${id}`,
-          { ...data, ...values },
+          { ...data, ...values, fecha_nac: formatDateToSQL(values.fecha_nac) },
           {
             headers: {
               'Content-Type': 'application/json',
@@ -62,7 +64,7 @@ const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSide
       return axios
         .post(
           '/api/backend/enfermeros',
-          { ...values },
+          { ...values, fecha_nac: formatDateToSQL(values.fecha_nac) },
           {
             headers: {
               'Content-Type': 'application/json',
@@ -133,6 +135,19 @@ const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSide
             />
             <FormErrorMessage>{errors.dni_enfermero ? errors.dni_enfermero.message : ''}</FormErrorMessage>
           </FormControl>
+          <FormControl isInvalid={Boolean(errors.fecha_nac)}>
+            <FormLabel>Birth date</FormLabel>
+            <Input
+              placeholder='Select the birth date of patient'
+              size='md'
+              type='date'
+              defaultValue={isEdit ? formatDateToHTMLInput(data?.fecha_nac) : ''}
+              {...register('fecha_nac', {
+                required: 'This is required',
+              })}
+            />
+            <FormErrorMessage>{errors.fecha_nac ? errors.fecha_nac.message : ''}</FormErrorMessage>
+          </FormControl>
           <FormControl isInvalid={Boolean(errors.estado)}>
             <FormLabel>Estado</FormLabel>
             <Select
@@ -141,8 +156,11 @@ const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSide
               {...register('estado', {
                 required: 'This is required',
               })}>
-              <option value='0'>No activo</option>
-              <option value='1'>Activo</option>
+              {nurseState.map((item, id) => (
+                <option key={id} value={id}>
+                  {item}
+                </option>
+              ))}
             </Select>
             <FormErrorMessage>{errors.estado ? errors.estado.message : ''}</FormErrorMessage>
           </FormControl>
@@ -154,8 +172,8 @@ const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSide
               {...register('sexo', {
                 required: 'This is required',
               })}>
-              <option value='Male'>Male</option>
-              <option value='Female'>Female</option>
+              <option value='Masculino'>Male</option>
+              <option value='Femenino'>Female</option>
               <option value='Other'>Other</option>
             </Select>
             <FormErrorMessage>{errors.sexo ? errors.sexo.message : ''}</FormErrorMessage>

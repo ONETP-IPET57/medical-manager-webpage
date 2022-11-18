@@ -13,12 +13,12 @@ import { useSession } from 'next-auth/react';
 
 type Inputs = {
   nombre: string;
-  descripcion: string;
   numero: string;
-  estado: string;
   id_forma_llamada: string;
-  dni_paciente: string;
   'dni_enfermero': string;
+  dni_paciente: string;
+  descripcion: string;
+  estado: string;
 };
 
 const ZonesActions = ({ data, dataNurses, dataPatients }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
@@ -226,9 +226,8 @@ export const getServerSideProps: GetServerSideProps<{ data: Zones | null; dataNu
         },
       });
 
-      console.log(res.data);
-
       data = await res.data;
+      console.log(res.data);
     }
 
     // Fetch data from external API

@@ -1,13 +1,16 @@
 /* eslint-disable react/no-children-prop */
 import { Heading, HStack, IconButton, Grid, GridItem, Flex, Text, Divider, Badge, Button, ButtonGroup, Input, InputGroup, InputLeftElement, Select } from '@chakra-ui/react';
-import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType, Redirect } from 'next';
 import { MainContainer } from '../../components/layouts/MainContainer';
 import { IoMdAdd } from 'react-icons/io';
 import { useRouter } from 'next/router';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { BiSearch } from 'react-icons/bi';
+import { formatDateToHuman } from '../../lib/date';
+import { unstable_getServerSession } from 'next-auth';
+import { authOptions } from '../api/auth/[...nextauth]';
 
 export type Nurses = {
   dni_enfermero: number;
@@ -25,7 +28,7 @@ type NursesKeysString = {
 
 export type NursesKeys = keyof NursesKeysString;
 
-export const nurseState = ['No activo', 'Activo'];
+export const nurseState = ['No activo', 'Activo', 'Ocupado'];
 
 const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
@@ -65,10 +68,11 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
 
   const reloadPagination = () => {
     const tempData = data.filter((nurse) => searchFilterFunc(nurse));
+
     let tempPaginationData = [];
 
-    for (let i = 0; i < tempData.length; i += 4) {
-      tempPaginationData.push(tempData.slice(i, i + 4));
+    for (let i = 0; i < tempData.length; i += 6) {
+      tempPaginationData.push(tempData.slice(i, i + 6));
     }
 
     setNurses(tempPaginationData);
@@ -107,18 +111,18 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
     <MainContainer>
       <HStack p='0.75rem' spacing='1rem'>
         <Heading as='h2' size='lg'>
-          Nurses
+          Nurses {data?.length}
         </Heading>
         <IconButton w='min' size='sm' fontSize='20px' colorScheme='blue' variant='outline' rounded='md' aria-label='Add Nurse' icon={<IoMdAdd />} onClick={() => handlerAddNurse()}>
           Add Nurse
         </IconButton>
 
-        <InputGroup bg='white' rounded='lg' shadow='md'>
+        <InputGroup bg='white' rounded='lg' shadow='md' flex='1'>
           <InputLeftElement pointerEvents='none' children={<BiSearch />} />
           <Input type='text' placeholder='Search' onChange={(e) => handlerSearchNurses(e)} />
         </InputGroup>
 
-        <Select defaultValue='nombre' onChange={(e) => handlerSearchType(e)} bg='white' rounded='lg' shadow='md'>
+        <Select defaultValue='nombre' onChange={(e) => handlerSearchType(e)} bg='white' rounded='lg' shadow='md' flex='1'>
           <option value='nombre'>Nombre</option>
           <option value='dni_enfermero'>DNI</option>
           <option value='fecha_nac'>Fecha de nacimiento</option>
@@ -149,33 +153,36 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
                   {nurse.email}
                 </Text> */}
                     <Divider />
-                    <Flex direction='column' w='full' gap='0.5rem'>
-                      <Text fontSize='md' fontWeight='bold'>
-                        Estado
-                      </Text>
-                      <Text fontSize='md'>{nurse.estado}</Text>
+                    <Flex direction='row' w='full' gap='0.5rem'>
+                      <Flex direction='column' w='full' gap='0.5rem'>
+                        <Text fontSize='md' fontWeight='bold'>
+                          Estado
+                        </Text>
+                        <Text fontSize='md'>{nurse.estado}</Text>
+                      </Flex>
+                      <Flex direction='column' w='full' gap='0.5rem'>
+                        <Text fontSize='md' fontWeight='bold'>
+                          Fecha de nacimiento
+                        </Text>
+                        <Text fontSize='md'>{formatDateToHuman(nurse.fecha_nac)}</Text>
+                      </Flex>
                     </Flex>
                     <Divider />
-                    <Flex direction='column' w='full' gap='0.5rem'>
-                      <Text fontSize='md' fontWeight='bold'>
-                        Fecha de nacimiento
-                      </Text>
-                      <Text fontSize='md'>{nurse.fecha_nac}</Text>
+                    <Flex direction='row' w='full' gap='0.5rem'>
+                      <Flex direction='column' w='full' gap='0.5rem'>
+                        <Text fontSize='md' fontWeight='bold'>
+                          Telefono
+                        </Text>
+                        <Text fontSize='md'>{nurse.telefono}</Text>
+                      </Flex>
+                      <Flex direction='column' w='full' gap='0.5rem'>
+                        <Text fontSize='md' fontWeight='bold'>
+                          Genero
+                        </Text>
+                        <Text fontSize='md'>{nurse.sexo}</Text>
+                      </Flex>
                     </Flex>
                     <Divider />
-                    <Flex direction='column' w='full' gap='0.5rem'>
-                      <Text fontSize='md' fontWeight='bold'>
-                        Telefono
-                      </Text>
-                      <Text fontSize='md'>{nurse.telefono}</Text>
-                    </Flex>
-                    <Divider />
-                    <Flex direction='column' w='full' gap='0.5rem'>
-                      <Text fontSize='md' fontWeight='bold'>
-                        Genero
-                      </Text>
-                      <Text fontSize='md'>{nurse.sexo}</Text>
-                    </Flex>
                   </Flex>
                   <Divider />
                   <ButtonGroup w='full' isAttached size='sm' variant='outline'>
@@ -212,13 +219,34 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
 };
 
 // This gets called on every request
-export const getServerSideProps: GetServerSideProps<{ data: Array<Nurses> }> = async () => {
-  // Fetch data from external API
-  const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/enfermeros`);
-  const data: Array<Nurses> = await res.data;
+export const getServerSideProps: GetServerSideProps<{ data: Nurses[] }> = async (context: GetServerSidePropsContext) => {
+  try {
+    const { req, res } = context;
+    const session = await unstable_getServerSession(req, res, authOptions);
 
-  // Pass data to the page via props
-  return { props: { data } };
+    if (!session) {
+      return {
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
+      };
+    }
+
+    // Fetch data from external API
+    const resNurses = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/enfermeros`, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    });
+
+    const data: Nurses[] = await resNurses.data;
+
+    // Pass data to the page via props
+    return { props: { data } };
+  } catch (e: Error | AxiosError | any) {
+    return { props: { data: [] as Nurses[] } };
+  }
 };
 
 export default Nurses;

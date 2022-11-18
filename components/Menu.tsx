@@ -1,5 +1,5 @@
 import { Badge, Box, Button, Divider, Flex, Heading, Icon } from '@chakra-ui/react';
-import { BiHome, BiClinic, BiBody, BiDoughnutChart, BiPhoneCall, BiLogOut, BiCog, BiUserPlus } from 'react-icons/bi';
+import { BiHome, BiClinic, BiBody, BiDoughnutChart, BiPhoneCall, BiLogOut, BiCog, BiUserPlus, BiUser } from 'react-icons/bi';
 import { TbNurse } from 'react-icons/tb';
 import React from 'react';
 import { useRouter } from 'next/router';
@@ -43,15 +43,15 @@ const menuItems = [
     role: 'all',
   },
   {
-    icon: <BiCog />,
-    title: 'Settings',
-    link: '/settings',
+    icon: <BiUser />,
+    title: 'Users',
+    link: '/users',
     role: 'administrador',
   },
   {
-    icon: <BiUserPlus />,
-    title: 'Add Users',
-    link: '/users/add',
+    icon: <BiCog />,
+    title: 'Settings',
+    link: '/settings',
     role: 'administrador',
   },
 ];

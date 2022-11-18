@@ -1,13 +1,26 @@
 /* eslint-disable react/no-children-prop */
 import { Heading, HStack, IconButton, Flex, Text, Divider, Badge, Button, ButtonGroup, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Input, InputGroup, InputLeftElement, Select } from '@chakra-ui/react';
-import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { MainContainer } from '../../components/layouts/MainContainer';
 import { IoMdAdd } from 'react-icons/io';
 import { useRouter } from 'next/router';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { BiSearch } from 'react-icons/bi';
+import { formatDatetimeToHuman, formatDateToHuman } from '../../lib/date';
+import { unstable_getServerSession } from 'next-auth';
+import { authOptions } from '../api/auth/[...nextauth]';
+
+export type Antecedente = {
+  id_antecedente: number;
+  dni_paciente: number;
+  motivo: string;
+  diagnostico: string;
+  tratamiento: string;
+  medicacion: string;
+  fecha: string;
+};
 
 export type Patients = {
   dni_paciente: number;
@@ -15,11 +28,14 @@ export type Patients = {
   apellido: string;
   fecha_nac: string;
   sexo: string;
-  direccion: string;
   telefono: string;
   fecha_hora_ingreso: string;
   fecha_hora_egreso: string;
   tipo_sangre: string;
+  direccion: string;
+  patologia: string;
+  alergia: string;
+  ultimo_antecedente: Antecedente;
 };
 
 type PatientsKeysString = {
@@ -110,18 +126,18 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
     <MainContainer>
       <HStack p='0.75rem' spacing='1rem'>
         <Heading as='h2' size='lg'>
-          Patients
+          Patients {data?.length}
         </Heading>
         <IconButton w='min' size='sm' fontSize='20px' colorScheme='blue' variant='outline' rounded='md' aria-label='Add Zone' icon={<IoMdAdd />} onClick={() => handlerAddPatient()}>
           Add Zone
         </IconButton>
 
-        <InputGroup bg='white' rounded='lg' shadow='md'>
+        <InputGroup bg='white' rounded='lg' shadow='md' flex='1'>
           <InputLeftElement pointerEvents='none' children={<BiSearch />} />
           <Input type='text' placeholder='Search' onChange={(e) => handlerSearchPatient(e)} />
         </InputGroup>
 
-        <Select defaultValue='nombre' onChange={(e) => handlerSearchType(e)} bg='white' rounded='lg' shadow='md'>
+        <Select defaultValue='nombre' onChange={(e) => handlerSearchType(e)} bg='white' rounded='lg' shadow='md' flex='1'>
           <option value='nombre'>Nombre</option>
           <option value='dni_paciente'>DNI</option>
           <option value='fecha_nac'>Fecha de nacimiento</option>
@@ -146,46 +162,96 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
               <AccordionPanel pb={4}>
                 <Flex direction='column' gap={4}>
                   <Divider />
-                  <Flex direction='column' w='full' gap='0.5rem'>
-                    <Text fontSize='md' fontWeight='bold'>
-                      Telefono
-                    </Text>
-                    <Text fontSize='md'>{patient.telefono}</Text>
+                  <Flex direction='row' w='full' h='full' gap='0.5rem'>
+                    <Flex direction='column' w='full' gap='0.5rem' flex='1'>
+                      <Text fontSize='md' fontWeight='bold'>
+                        Telefono
+                      </Text>
+                      <Text fontSize='md'>{patient.telefono}</Text>
+                    </Flex>
+                    <Flex direction='column' w='full' gap='0.5rem' flex='1'>
+                      <Text fontSize='md' fontWeight='bold'>
+                        Genero
+                      </Text>
+                      <Text fontSize='md'>{patient.sexo}</Text>
+                    </Flex>
                   </Flex>
                   <Divider />
-                  <Flex direction='column' w='full' gap='0.5rem'>
-                    <Text fontSize='md' fontWeight='bold'>
-                      Fecha de nacimiento
-                    </Text>
-                    <Text fontSize='md'>{patient.fecha_nac}</Text>
+                  <Flex direction='row' w='full' gap='0.5rem'>
+                    <Flex direction='column' w='full' gap='0.5rem' flex='1'>
+                      <Text fontSize='md' fontWeight='bold'>
+                        Fecha de nacimiento
+                      </Text>
+                      <Text fontSize='md'>{formatDateToHuman(patient.fecha_nac)}</Text>
+                    </Flex>
+                    <Flex direction='column' w='full' gap='0.5rem' flex='1'>
+                      <Text fontSize='md' fontWeight='bold'>
+                        Direccion
+                      </Text>
+                      <Text fontSize='md'>{patient.direccion}</Text>
+                    </Flex>
                   </Flex>
                   <Divider />
-                  <Flex direction='column' w='full' gap='0.5rem'>
-                    <Text fontSize='md' fontWeight='bold'>
-                      Direccion
-                    </Text>
-                    <Text fontSize='md'>{patient.direccion}</Text>
+                  <Flex direction='row' w='full' gap='0.5rem'>
+                    <Flex direction='column' w='full' gap='0.5rem' flex='1'>
+                      <Text fontSize='md' fontWeight='bold'>
+                        Patologias
+                      </Text>
+                      <Text fontSize='md'>{patient.patologia ? patient.patologia : 'Sin patologias registradas'}</Text>
+                    </Flex>
+                    <Flex direction='column' w='full' gap='0.5rem' flex='1'>
+                      <Text fontSize='md' fontWeight='bold'>
+                        Alergia
+                      </Text>
+                      <Text fontSize='md'>{patient.alergia ? patient.alergia : 'Sin alergias registradas'}</Text>
+                    </Flex>
                   </Flex>
                   <Divider />
-                  <Flex direction='column' w='full' gap='0.5rem'>
-                    <Text fontSize='md' fontWeight='bold'>
-                      Genero
-                    </Text>
-                    <Text fontSize='md'>{patient.sexo}</Text>
-                  </Flex>
-                  <Divider />
+                  {patient.ultimo_antecedente ? (
+                    <>
+                      <Flex direction='column' w='full' gap='0.5rem' flex='1'>
+                        <Text fontSize='md' fontWeight='bold'>
+                          Ultimo antecedente
+                        </Text>
+                        <Flex direction='row' w='full' gap='0.5rem'>
+                          <Flex direction='column' w='full' gap='0.5rem' flex='1'>
+                            <Text fontSize='md' fontWeight='bold'>
+                              Fecha
+                            </Text>
+                            <Text fontSize='md'>{patient.ultimo_antecedente.fecha}</Text>
+                          </Flex>
+                          <Flex direction='column' w='full' gap='0.5rem' flex='1'>
+                            <Text fontSize='md' fontWeight='bold'>
+                              Motivo
+                            </Text>
+                            <Text fontSize='md'>{patient.ultimo_antecedente.motivo}</Text>
+                          </Flex>
+                          <Flex direction='column' w='full' gap='0.5rem' flex='1'>
+                            <Text fontSize='md' fontWeight='bold'>
+                              Diagnostico
+                            </Text>
+                            <Text fontSize='md'>{patient.ultimo_antecedente.diagnostico}</Text>
+                          </Flex>
+                        </Flex>
+                      </Flex>
+                      <Divider />
+                    </>
+                  ) : null}
                   <Flex direction='row' w='full' gap='0.5rem' justify='space-between'>
                     <Badge colorScheme='blue' mr='0.5rem'>
-                      Fecha de ingreso: {patient.fecha_hora_ingreso}
+                      Fecha de ingreso: {formatDatetimeToHuman(patient.fecha_hora_ingreso)}
                     </Badge>
                     {patient.fecha_hora_egreso ? (
                       <Badge colorScheme='green' mr='0.5rem'>
-                        Fecha de egreso: {patient.fecha_hora_egreso}
+                        Fecha de egreso: {formatDatetimeToHuman(patient.fecha_hora_egreso)}
                       </Badge>
                     ) : null}
                   </Flex>
                   <Divider />
                   <ButtonGroup isAttached variant='outline' colorScheme='blue' size='md' w='full'>
+                    {/* <Button w='full' onClick={() => handlerViewPatient(patient.dni_paciente)}>
+                      View
+                    </Button> */}
                     <Button w='full' onClick={() => handlerEditPatient(patient.dni_paciente)}>
                       Edit
                     </Button>
@@ -218,13 +284,34 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
 };
 
 // This gets called on every request
-export const getServerSideProps: GetServerSideProps<{ data: Array<Patients> }> = async () => {
-  // Fetch data from external API
-  const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pacientes`);
-  const data: Array<Patients> = await res.data;
+export const getServerSideProps: GetServerSideProps<{ data: Patients[] }> = async (context: GetServerSidePropsContext) => {
+  try {
+    const { req, res } = context;
+    const session = await unstable_getServerSession(req, res, authOptions);
 
-  // Pass data to the page via props
-  return { props: { data } };
+    if (!session) {
+      return {
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
+      };
+    }
+
+    // Fetch data from external API
+    const resNurses = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pacientes`, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    });
+
+    const data: Patients[] = await resNurses.data;
+
+    // Pass data to the page via props
+    return { props: { data } };
+  } catch (e: Error | AxiosError | any) {
+    return { props: { data: [] as Patients[] } };
+  }
 };
 
 export default Patients;
