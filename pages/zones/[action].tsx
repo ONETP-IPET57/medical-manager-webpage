@@ -231,12 +231,20 @@ export const getServerSideProps: GetServerSideProps<{ data: Zones | null; dataNu
     }
 
     // Fetch data from external API
-    const resNurses = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/enfermeros`);
+    const resNurses = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/enfermeros`, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    });
 
     const dataNurses: Array<Nurses> = await resNurses.data;
 
     // Fetch data from external API
-    const resPatients = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pacientes`);
+    const resPatients = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pacientes`, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    });
 
     const dataPatients: Array<Patients> = await resPatients.data;
 

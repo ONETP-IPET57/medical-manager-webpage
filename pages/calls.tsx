@@ -1,5 +1,5 @@
 /* eslint-disable react/no-children-prop */
-import { Badge, Divider, Flex, Grid, GridItem, Heading, HStack, Input, InputGroup, InputLeftElement, Select, Text } from '@chakra-ui/react';
+import { Badge, Divider, Flex, Grid, GridItem, Heading, HStack, Input, InputGroup, InputLeftElement, Select, Text, ButtonGroup, Button } from '@chakra-ui/react';
 import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { MainContainer } from '../components/layouts/MainContainer';
 import axios, { AxiosError } from 'axios';
@@ -8,12 +8,13 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]';
+import { formatDatetimeToHuman } from '../lib/date';
 
 export type Call = {
   id_llamada: number;
   tipo: string;
   fecha_hora_llamada: string;
-  fecha_hora_atendido: string;
+  fecha_hora_atentido: string;
   origen_llamada: string;
   dni_paciente: number;
   id_zona: number;
@@ -38,6 +39,7 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
 
   useEffect(() => {
     reloadPagination();
+    console.log(data);
   }, [data, searchFilter, searchType, pagination]);
 
   const handlerSearchCall = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,8 +56,8 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
     const tempData = data.filter((call) => searchFilterFunc(call));
     let tempPaginationData = [];
 
-    for (let i = 0; i < tempData.length; i += 6) {
-      tempPaginationData.push(tempData.slice(i, i + 6));
+    for (let i = 0; i < tempData.length; i += 4) {
+      tempPaginationData.push(tempData.slice(i, i + 4));
     }
 
     setCalls(tempPaginationData);
@@ -66,7 +68,7 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
       return call[searchType].toString().toLowerCase().startsWith(searchFilter.toLowerCase());
     } else if (searchType === 'nombre_paciente') {
       return call.nombre_paciente.toLowerCase().startsWith(searchFilter.toLowerCase()) || call.apellido_paciente.toLowerCase().startsWith(searchFilter.toLowerCase());
-    } else if (searchType === 'fecha_hora_atendido') {
+    } else if (searchType === 'fecha_hora_atentido') {
       if (!call.fecha_hora_atendido) {
         if (searchFilter.length > 0) {
           return 'no atendido'.startsWith(searchFilter);
@@ -96,6 +98,9 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
         <Heading as='h2' size='lg'>
           Calls: {data?.length}
         </Heading>
+        <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
+          Export
+        </Button>
 
         <InputGroup bg='white' rounded='lg' shadow='md' flex='1'>
           <InputLeftElement pointerEvents='none' children={<BiSearch />} />
@@ -112,7 +117,7 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
           <option value='nombre_paciente'>Paciente</option>
         </Select>
       </HStack>
-      <Grid h='auto' w='full' templateColumns='repeat(6, 1fr)' templateRows='repeat(12, 1fr)' gap='2rem'>
+      <Grid h='auto' w='full' templateColumns='repeat(6, 1fr)' templateRows='auto' gap='2rem'>
         {calls[pagination] ? (
           calls[pagination]
             /* .map((call) => {
@@ -160,12 +165,12 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
                     <Text fontSize='md'>{call.tipo}</Text>
                   </Flex>
                   <Divider />
-                  <Flex direction='row' w='full' gap='0.5rem' justify='space-between'>
+                  <Flex direction='column' w='full' gap='0.5rem' justify='space-between'>
                     <Badge colorScheme='blue' mr='0.5rem'>
-                      Fecha y hora de llamada: {call.fecha_hora_llamada}
+                      Fecha y hora de llamada: {formatDatetimeToHuman(call.fecha_hora_llamada)}
                     </Badge>
                     <Badge colorScheme='green' mr='0.5rem'>
-                      {call.fecha_hora_atendido ? 'Fecha y hora de atencion: ' + call.fecha_hora_atendido : 'No atendido'}
+                      {call.fecha_hora_atentido ? 'Fecha y hora de atencion: ' + formatDatetimeToHuman(call.fecha_hora_atentido) : 'No atendido'}
                     </Badge>
                   </Flex>
                   <Divider />
@@ -182,6 +187,14 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
           </GridItem>
         )}
       </Grid>
+      <ButtonGroup shadow='md' size='sm' isAttached variant='outline' w='full' colorScheme='blue' bg='white' rounded='lg'>
+        <Button w='full' onClick={(e) => handlerPagination(e)} value='prev' disabled={pagination === 0 || !calls[pagination]}>
+          Prev
+        </Button>
+        <Button w='full' onClick={(e) => handlerPagination(e)} value='next' disabled={pagination === calls.length - 1 || !calls[pagination]}>
+          Next
+        </Button>
+      </ButtonGroup>
     </MainContainer>
   );
 };
@@ -209,6 +222,8 @@ export const getServerSideProps: GetServerSideProps<{ data: Call[] }> = async (c
     });
 
     const data: Call[] = await resLlamadas.data;
+
+    console.log(data);
 
     // Pass data to the page via props
     return { props: { data } };

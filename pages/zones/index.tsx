@@ -121,9 +121,10 @@ const Zones = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
         <Heading as='h2' size='lg' textShadow='md'>
           Zones: {data?.length}
         </Heading>
-        <IconButton w='min' size='sm' fontSize='20px' colorScheme='blue' variant='outline' bg='white' rounded='lg' aria-label='Add Zone' icon={<IoMdAdd />} onClick={() => handlerAddZone()}>
-          Add Zone
-        </IconButton>
+        <IconButton w='min' fontSize='20px' colorScheme='blue' variant='ghost' bg='white' rounded='lg' aria-label='Add Zone' shadow='md' icon={<IoMdAdd />} onClick={() => handlerAddZone()}/>
+        <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
+          Export
+        </Button>
 
         <InputGroup bg='white' rounded='lg' shadow='md' flex='1'>
           <InputLeftElement pointerEvents='none' children={<BiSearch />} />

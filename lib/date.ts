@@ -81,3 +81,22 @@ export const formatDatetimeToSQL = (datetime: string | undefined) => {
   const second = `${d.getSeconds()}`.padStart(2, '0');
   return [year, month, day].join('-') + ' ' + [hour, minute, second].join(':');
 };
+
+export const compareMinutesAndShowDiff = (datetimeOne: string | undefined, datetimeTwo: string | undefined) => {
+  if (!datetimeOne || !datetimeTwo) {
+    return 0;
+  }
+  const d1 = new Date(datetimeOne);
+  const d2 = new Date(datetimeTwo);
+  const diff = d1.getTime() - d2.getTime();
+  const diffMinutes = Math.abs(Math.round(diff / 60000));
+  return diffMinutes;
+};
+
+export const getAverage = (minutes: number[] | undefined) => {
+  if (!minutes || minutes.length === 0) {
+    return 0;
+  }
+  const sum = minutes.reduce((a, b) => a + b, 0);
+  return sum / minutes.length;
+};

@@ -128,9 +128,10 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
         <Heading as='h2' size='lg'>
           Patients {data?.length}
         </Heading>
-        <IconButton w='min' size='sm' fontSize='20px' colorScheme='blue' variant='outline' rounded='md' aria-label='Add Zone' icon={<IoMdAdd />} onClick={() => handlerAddPatient()}>
-          Add Zone
-        </IconButton>
+        <IconButton w='min' fontSize='20px' colorScheme='blue' variant='ghost' bg='white' rounded='lg' aria-label='Add Zone' shadow='md' icon={<IoMdAdd />} onClick={() => handlerAddPatient()} />
+        <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
+          Export
+        </Button>
 
         <InputGroup bg='white' rounded='lg' shadow='md' flex='1'>
           <InputLeftElement pointerEvents='none' children={<BiSearch />} />
