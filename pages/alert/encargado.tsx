@@ -1,7 +1,9 @@
 import { HStack, Heading, Flex, Button, Text } from '@chakra-ui/react';
 import axios from 'axios';
-import type { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next';
+import type { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from 'next';
+import { unstable_getServerSession } from 'next-auth';
 import { MainContainer } from '../../components/layouts/MainContainer';
+import { authOptions } from '../api/auth/[...nextauth]';
 import { Nurses } from '../nurses';
 import { Zones } from '../zones';
 
@@ -25,12 +27,32 @@ const Encargado = ({ zones, nurses }: InferGetServerSidePropsType<typeof getServ
 };
 
 // This gets called on every request
-export const getServerSideProps: GetServerSideProps<{ zones: Array<Zones>; nurses: Array<Nurses> }> = async () => {
-  // Fetch data from external API
-  const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/zonas`);
-  const zones: Array<Zones> = await res.data;
+export const getServerSideProps: GetServerSideProps<{ zones: Array<Zones>; nurses: Array<Nurses> }> = async (context: GetServerSidePropsContext) => {
+  const { req, res } = context;
+  const session = await unstable_getServerSession(req, res, authOptions);
 
-  const resNurses = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pacientes`);
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
+  // Fetch data from external API
+  const resZones = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/zonas`, {
+    headers: {
+      Authorization: `Bearer ${session.accessToken}`,
+    },
+  });
+  const zones: Array<Zones> = await resZones.data;
+
+  const resNurses = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pacientes`, {
+    headers: {
+      Authorization: `Bearer ${session.accessToken}`,
+    },
+  });
   const nurses: Array<Nurses> = await resNurses.data;
 
   // Pass data to the page via props
