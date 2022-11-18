@@ -104,18 +104,20 @@ const UserActions = ({ data }: InferGetServerSidePropsType<typeof getServerSideP
             />
             <FormErrorMessage>{errors.username ? errors.username.message : ''}</FormErrorMessage>
           </FormControl>
-          <FormControl isInvalid={Boolean(errors.password)}>
+          <FormControl isInvalid={Boolean(errors.password)} isDisabled={action === 'edit'}>
             <FormLabel>Password</FormLabel>
             <Input
               type='password'
               placeholder={'Add a password'}
               defaultValue={isEdit ? data?.password : ''}
-              {...register('password', {
-                required: 'This is required',
-                minLength: { value: 4, message: 'Minimum length should be 4' },
-                maxLength: { value: 30, message: 'Maximum length should be 30' },
-                pattern: { value: /^[a-zA-Z0-9\_\-\s]+$/i, message: 'Alphanumeric characters only' },
-              })}
+              {...(action === 'add'
+                ? register('password', {
+                    required: 'This is required',
+                    minLength: { value: 4, message: 'Minimum length should be 4' },
+                    maxLength: { value: 30, message: 'Maximum length should be 30' },
+                    pattern: { value: /^[a-zA-Z0-9\_\-\s]+$/i, message: 'Alphanumeric characters only' },
+                  })
+                : {})}
             />
             <FormErrorMessage>{errors.password ? errors.password.message : ''}</FormErrorMessage>
           </FormControl>

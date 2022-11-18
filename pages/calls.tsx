@@ -94,7 +94,7 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
 
   return (
     <MainContainer>
-      <HStack p='0.75rem' spacing='1rem'>
+      <HStack p='0.75rem' gap='1rem' flexWrap='wrap'>
         <Heading as='h2' size='lg'>
           Calls: {data?.length}
         </Heading>
@@ -117,7 +117,7 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
           <option value='nombre_paciente'>Paciente</option>
         </Select>
       </HStack>
-      <Grid h='auto' w='full' templateColumns='repeat(6, 1fr)' templateRows='auto' gap='2rem'>
+      <Grid h='auto' w='full' templateColumns={{ base: 'auto', md: 'repeat(6, 1fr)' }} templateRows='auto' gap='2rem'>
         {calls[pagination] ? (
           calls[pagination]
             /* .map((call) => {

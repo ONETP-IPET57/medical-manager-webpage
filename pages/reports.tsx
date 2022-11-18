@@ -202,8 +202,8 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
           Export
         </Button>
       </HStack>
-      <Grid h='auto' w='full' templateColumns='repeat(6, 1fr)' templateRows='auto' gap='2rem'>
-        <GridItem rowSpan={1} colSpan={3} bg='white' p='0.75rem' rounded='lg'>
+      <Grid h='auto' w='full' templateColumns={{ base: 'auto', md: 'repeat(6, 1fr)' }} templateRows='auto' gap='2rem'>
+        <GridItem rowSpan={1} colSpan={{ base: 1, md: 3 }} bg='white' p='0.75rem' rounded='lg'>
           <Flex direction='column' gap='1rem' h='full' p='1rem'>
             <Heading as='h3' size='md'>
               Genero
@@ -211,7 +211,7 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
             {dataChart && Object.keys(dataChart).length > 0 ? <BarChartChakra options={chartOptions} data={dataChart} /> : null}
           </Flex>
         </GridItem>
-        <GridItem rowSpan={1} colSpan={3} bg='white' p='0.75rem' rounded='lg'>
+        <GridItem rowSpan={1} colSpan={{ base: 1, md: 3 }} bg='white' p='0.75rem' rounded='lg'>
           <Flex direction='column' gap='1rem' h='full' align='flex-start' p='1rem'>
             <Heading as='h3' size='md'>
               Tiempo promedio en respuesta de llamadas
@@ -221,7 +221,7 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
             </Text>
           </Flex>
         </GridItem>
-        <GridItem rowSpan={1} colSpan={3} bg='white' p='0.75rem' rounded='lg'>
+        <GridItem rowSpan={1} colSpan={{ base: 1, md: 3 }} bg='white' p='0.75rem' rounded='lg'>
           <Flex direction='column' gap='1rem' h='full' p='1rem'>
             <Heading as='h3' size='md'>
               Estado de zonas
@@ -229,7 +229,7 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
             {dataChartZonesState && Object.keys(dataChartZonesState).length > 0 ? <PieChartChakra options={chartOptionsPie} data={dataChartZonesState} /> : null}
           </Flex>
         </GridItem>
-        <GridItem rowSpan={1} colSpan={3} bg='white' p='0.75rem' rounded='lg'>
+        <GridItem rowSpan={1} colSpan={{ base: 1, md: 3 }} bg='white' p='0.75rem' rounded='lg'>
           <Flex direction='column' gap='1rem' h='full' p='1rem'>
             <Heading as='h3' size='md'>
               Forma de llamada
@@ -237,7 +237,7 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
             {dataChartZonesFormaLlamada && Object.keys(dataChartZonesFormaLlamada).length > 0 ? <PieChartChakra options={chartOptionsPie} data={dataChartZonesFormaLlamada} /> : null}
           </Flex>
         </GridItem>
-        <GridItem rowSpan={1} colSpan={6} bg='white' p='0.75rem' rounded='lg'>
+        <GridItem rowSpan={1} colSpan={{ base: 1, md: 6 }} bg='white' p='0.75rem' rounded='lg'>
           <Flex direction='column' gap='1rem' h='full' p='1rem'>
             <Heading as='h3' size='md'>
               Promedio de edad
@@ -245,7 +245,7 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
             {dataChartAgePatients && Object.keys(dataChartAgePatients).length > 0 ? <BarChartChakra options={chartOptionsVertical} data={dataChartAgePatients} /> : null}
           </Flex>
         </GridItem>
-        <GridItem rowSpan={1} colSpan={3} bg='white' p='0.75rem' rounded='lg'>
+        <GridItem rowSpan={1} colSpan={{ base: 1, md: 3 }} bg='white' p='0.75rem' rounded='lg'>
           <Flex direction='column' gap='1rem' h='full' p='1rem'>
             <Heading as='h3' size='md'>
               Estado de Medicos

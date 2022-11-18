@@ -117,11 +117,11 @@ const Zones = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
 
   return (
     <MainContainer>
-      <HStack p='0.75rem' spacing='1rem'>
+      <HStack p='0.75rem' gap='1rem' flexWrap='wrap'>
         <Heading as='h2' size='lg' textShadow='md'>
           Zones: {data?.length}
         </Heading>
-        <IconButton w='min' fontSize='20px' colorScheme='blue' variant='ghost' bg='white' rounded='lg' aria-label='Add Zone' shadow='md' icon={<IoMdAdd />} onClick={() => handlerAddZone()}/>
+        <IconButton w='min' fontSize='20px' colorScheme='blue' variant='ghost' bg='white' rounded='lg' aria-label='Add Zone' shadow='md' icon={<IoMdAdd />} onClick={() => handlerAddZone()} />
         <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
           Export
         </Button>
@@ -140,7 +140,7 @@ const Zones = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
           <option value='nombre_enfermero'>Enfermero</option>
         </Select>
       </HStack>
-      <Grid h='auto' w='full' templateColumns='repeat(6, 1fr)' templateRows='auto' gap='2rem'>
+      <Grid h='auto' w='full' templateColumns={{ base: 'auto', md: 'repeat(6, 1fr)' }} templateRows='auto' gap='2rem'>
         {zones[pagination] ? (
           zones[pagination]
             .map((zone) => {

@@ -124,7 +124,7 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
 
   return (
     <MainContainer>
-      <HStack p='0.75rem' spacing='1rem'>
+      <HStack p='0.75rem' gap='1rem' flexWrap='wrap'>
         <Heading as='h2' size='lg'>
           Patients {data?.length}
         </Heading>

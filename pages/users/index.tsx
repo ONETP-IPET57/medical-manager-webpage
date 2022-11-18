@@ -103,13 +103,14 @@ const Users = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
 
   return (
     <MainContainer>
-      <HStack p='0.75rem' spacing='1rem'>
+      <HStack p='0.75rem' gap='1rem' flexWrap='wrap'>
         <Heading as='h2' size='lg'>
           Users: {data?.length}
         </Heading>
-        <IconButton w='min' size='sm' fontSize='20px' colorScheme='blue' variant='outline' bg='white' rounded='lg' aria-label='Add User' icon={<IoMdAdd />} onClick={() => handlerAddUser()}>
-          Add Zone
-        </IconButton>
+        <IconButton w='min' fontSize='20px' colorScheme='blue' variant='ghost' bg='white' rounded='lg' aria-label='Add User' shadow='md' icon={<IoMdAdd />} onClick={() => handlerAddUser()} />
+        <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
+          Export
+        </Button>
 
         <InputGroup bg='white' rounded='lg' shadow='md' flex='1'>
           <InputLeftElement pointerEvents='none' children={<BiSearch />} />
@@ -122,7 +123,7 @@ const Users = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
           <option value='role'>Rol</option>
         </Select>
       </HStack>
-      <Grid h='auto' w='full' templateColumns='repeat(6, 1fr)' templateRows='auto' gap='2rem'>
+      <Grid h='auto' w='full' templateColumns={{ base: 'auto', md: 'repeat(6, 1fr)' }} templateRows='auto' gap='2rem'>
         {users[pagination] ? (
           users[pagination].map((user) => (
             <GridItem rowSpan={1} colSpan={3} bg='white' p='0.75rem' rounded='lg' key={user.id_user} overflow='hidden' shadow='md'>

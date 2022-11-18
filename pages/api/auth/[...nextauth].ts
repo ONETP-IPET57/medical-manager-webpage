@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   pages: {
-    signIn: '/user/login', // Changing the error redirect page to our custom login page
+    signIn: '/login', // Changing the error redirect page to our custom login page
   },
 };
 

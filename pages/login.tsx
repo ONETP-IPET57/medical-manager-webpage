@@ -26,15 +26,19 @@ const Login: NextPage = () => {
       username: values.username,
       password: values.password,
       redirect: false,
-    }).then((res) => {
-      console.log(res);
-      if (res?.error) {
-        console.log('error', res?.error);
-      } else {
-        router.push('/');
-        console.log('redirect');
-      }
-    });
+    })
+      .then((res) => {
+        console.log(res);
+        if (res?.error) {
+          console.log('error', res?.error);
+        } else {
+          router.push('/');
+          console.log('redirect');
+        }
+      })
+      .catch((err) => {
+        console.log('error', err);
+      });
   };
 
   return (
