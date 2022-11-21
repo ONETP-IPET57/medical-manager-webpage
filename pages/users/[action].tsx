@@ -7,7 +7,10 @@ import { MainContainer } from '../../components/layouts/MainContainer';
 import axios from 'axios';
 import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
-import { User } from '.';
+import { User, usersRole } from '.';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
+import { BackButton } from '../../components/BackButton';
 
 type Inputs = {
   username: string;
@@ -21,6 +24,7 @@ const UserActions = ({ data }: InferGetServerSidePropsType<typeof getServerSideP
   const { action, id } = router.query;
   const isEdit = action === 'edit';
   const { data: session } = useSession();
+  const { t } = useTranslation(['common', 'users']);
 
   const {
     register,
@@ -84,16 +88,17 @@ const UserActions = ({ data }: InferGetServerSidePropsType<typeof getServerSideP
     <MainContainer>
       <HStack p='0.75rem' spacing='1rem'>
         <Heading as='h2' size='lg'>
-          Add User
+          {t(`users:actions.${isEdit ? 'edit' : 'add'}.title`)}
         </Heading>
+        <BackButton />
       </HStack>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Flex direction='column' p='1rem' gap='1rem' bg='white' rounded='xl'>
           <FormControl isInvalid={Boolean(errors.username)}>
-            <FormLabel>Username</FormLabel>
+            <FormLabel>{t(`users:actions.${isEdit ? 'edit' : 'add'}.username.label`)}</FormLabel>
             <Input
               type='text'
-              placeholder={'Add a username'}
+              placeholder={t(`users:actions.${isEdit ? 'edit' : 'add'}.username.placeholder`)}
               defaultValue={isEdit ? data?.username : ''}
               {...register('username', {
                 required: 'This is required',
@@ -105,10 +110,10 @@ const UserActions = ({ data }: InferGetServerSidePropsType<typeof getServerSideP
             <FormErrorMessage>{errors.username ? errors.username.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.password)} isDisabled={action === 'edit'}>
-            <FormLabel>Password</FormLabel>
+            <FormLabel>{t(`users:actions.${isEdit ? 'edit' : 'add'}.password.label`)}</FormLabel>
             <Input
               type='password'
-              placeholder={'Add a password'}
+              placeholder={t(`users:actions.${isEdit ? 'edit' : 'add'}.password.placeholder`)}
               defaultValue={isEdit ? data?.password : ''}
               {...(action === 'add'
                 ? register('password', {
@@ -122,10 +127,10 @@ const UserActions = ({ data }: InferGetServerSidePropsType<typeof getServerSideP
             <FormErrorMessage>{errors.password ? errors.password.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.email)}>
-            <FormLabel>Email</FormLabel>
+            <FormLabel>{t(`users:actions.${isEdit ? 'edit' : 'add'}.email.label`)}</FormLabel>
             <Input
               type='email'
-              placeholder={'Add a email'}
+              placeholder={t(`users:actions.${isEdit ? 'edit' : 'add'}.email.placeholder`)}
               defaultValue={isEdit ? data?.email : ''}
               {...register('email', {
                 required: 'This is required',
@@ -135,21 +140,24 @@ const UserActions = ({ data }: InferGetServerSidePropsType<typeof getServerSideP
             <FormErrorMessage>{errors.email ? errors.email.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.role)}>
-            <FormLabel>Rol</FormLabel>
+            <FormLabel>{t(`users:actions.${isEdit ? 'edit' : 'add'}.role.label`)}</FormLabel>
             <Select
-              placeholder='Select rol'
+              placeholder={t(`users:actions.${isEdit ? 'edit' : 'add'}.role.placeholder`)}
               defaultValue={isEdit ? data?.role : ''}
               {...register('role', {
                 required: 'This is required',
               })}>
-              <option value='1'>Administrador</option>
-              <option value='0'>Usuario</option>
+              {usersRole.map((role, id) => (
+                <option key={id} value={id}>
+                  {t(`users:actions.${isEdit ? 'edit' : 'add'}.role.options.${role}`)}
+                </option>
+              ))}
             </Select>
             <FormErrorMessage>{errors.role ? errors.role.message : ''}</FormErrorMessage>
           </FormControl>
           <Divider />
           <Button colorScheme='blue' variant='solid' rounded='md' w='full' type='submit' isLoading={isSubmitting}>
-            Submit
+            {t(`users:actions.${isEdit ? 'edit' : 'add'}.submit`)}
           </Button>
         </Flex>
       </form>
@@ -159,6 +167,7 @@ const UserActions = ({ data }: InferGetServerSidePropsType<typeof getServerSideP
 
 // This gets called on every request
 export const getServerSideProps: GetServerSideProps<{ data: User | null }> = async (context: any) => {
+  const { locale, defaultLocale } = context;
   try {
     const session = await unstable_getServerSession(context.req, context.res, authOptions);
 
@@ -185,9 +194,9 @@ export const getServerSideProps: GetServerSideProps<{ data: User | null }> = asy
     }
 
     // Pass data to the page via props
-    return { props: { data } };
+    return { props: { data, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'users'])) } };
   } catch (e) {
-    return { props: { data: null } };
+    return { props: { data: null, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'users'])) } };
   }
 };
 

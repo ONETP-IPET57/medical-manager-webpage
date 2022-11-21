@@ -11,6 +11,8 @@ import { BiSearch } from 'react-icons/bi';
 import { formatDatetimeToHuman, formatDateToHuman } from '../../lib/date';
 import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 export type Antecedente = {
   id_antecedente: number;
@@ -47,6 +49,7 @@ export type PatientsKeys = keyof PatientsKeysString;
 const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { data: session } = useSession();
+  const { t } = useTranslation(['common', 'patients']);
   const [searchFilter, setSearchFilter] = useState<string>('');
   const [searchType, setSearchType] = useState<PatientsKeys>('nombre');
   const [pagination, setPagination] = useState<number>(0);
@@ -126,11 +129,11 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
     <MainContainer>
       <HStack p='0.75rem' gap='1rem' flexWrap='wrap'>
         <Heading as='h2' size='lg'>
-          Patients {data?.length}
+          {t('patients:title', { length: data?.length })}
         </Heading>
         <IconButton w='min' fontSize='20px' colorScheme='blue' variant='ghost' bg='white' rounded='lg' aria-label='Add Zone' shadow='md' icon={<IoMdAdd />} onClick={() => handlerAddPatient()} />
         <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
-          Export
+          {t('common:actions.export')}
         </Button>
 
         <InputGroup bg='white' rounded='lg' shadow='md' flex='1'>
@@ -139,12 +142,12 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
         </InputGroup>
 
         <Select defaultValue='nombre' onChange={(e) => handlerSearchType(e)} bg='white' rounded='lg' shadow='md' flex='1'>
-          <option value='nombre'>Nombre</option>
-          <option value='dni_paciente'>DNI</option>
-          <option value='fecha_nac'>Fecha de nacimiento</option>
-          <option value='sexo'>Genero</option>
-          <option value='telefono'>Telefono</option>
-          <option value='tipo_sangre'>Tipo de sangre</option>
+          <option value='nombre'>{t('patients:search-filter.name')}</option>
+          <option value='dni_paciente'>{t('patients:search-filter.id_card_patient')}</option>
+          <option value='fecha_nac'>{t('patients:search-filter.birth_date')}</option>
+          <option value='sexo'>{t('patients:search-filter.gender')}</option>
+          <option value='telefono'>{t('patients:search-filter.phone')}</option>
+          <option value='tipo_sangre'>{t('patients:search-filter.blood_type')}</option>
         </Select>
       </HStack>
       <Accordion allowToggle w='full'>
@@ -166,13 +169,13 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
                   <Flex direction='row' w='full' h='full' gap='0.5rem'>
                     <Flex direction='column' w='full' gap='0.5rem' flex='1'>
                       <Text fontSize='md' fontWeight='bold'>
-                        Telefono
+                        {t('patients:item.phone')}
                       </Text>
                       <Text fontSize='md'>{patient.telefono}</Text>
                     </Flex>
                     <Flex direction='column' w='full' gap='0.5rem' flex='1'>
                       <Text fontSize='md' fontWeight='bold'>
-                        Genero
+                        {t('patients:item.gender')}
                       </Text>
                       <Text fontSize='md'>{patient.sexo}</Text>
                     </Flex>
@@ -181,13 +184,13 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
                   <Flex direction='row' w='full' gap='0.5rem'>
                     <Flex direction='column' w='full' gap='0.5rem' flex='1'>
                       <Text fontSize='md' fontWeight='bold'>
-                        Fecha de nacimiento
+                        {t('patients:item.birth_date')}
                       </Text>
                       <Text fontSize='md'>{formatDateToHuman(patient.fecha_nac)}</Text>
                     </Flex>
                     <Flex direction='column' w='full' gap='0.5rem' flex='1'>
                       <Text fontSize='md' fontWeight='bold'>
-                        Direccion
+                        {t('patients:item.address')}
                       </Text>
                       <Text fontSize='md'>{patient.direccion}</Text>
                     </Flex>
@@ -196,13 +199,13 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
                   <Flex direction='row' w='full' gap='0.5rem'>
                     <Flex direction='column' w='full' gap='0.5rem' flex='1'>
                       <Text fontSize='md' fontWeight='bold'>
-                        Patologias
+                        {t('patients:item.pathologies')}
                       </Text>
                       <Text fontSize='md'>{patient.patologia ? patient.patologia : 'Sin patologias registradas'}</Text>
                     </Flex>
                     <Flex direction='column' w='full' gap='0.5rem' flex='1'>
                       <Text fontSize='md' fontWeight='bold'>
-                        Alergia
+                        {t('patients:item.allergies')}
                       </Text>
                       <Text fontSize='md'>{patient.alergia ? patient.alergia : 'Sin alergias registradas'}</Text>
                     </Flex>
@@ -212,24 +215,24 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
                     <>
                       <Flex direction='column' w='full' gap='0.5rem' flex='1'>
                         <Text fontSize='md' fontWeight='bold'>
-                          Ultimo antecedente
+                          {t('patients:antecedent_item.last_antecedent')}
                         </Text>
                         <Flex direction='row' w='full' gap='0.5rem'>
                           <Flex direction='column' w='full' gap='0.5rem' flex='1'>
                             <Text fontSize='md' fontWeight='bold'>
-                              Fecha
+                              {t('patients:antecedent_item.date')}
                             </Text>
                             <Text fontSize='md'>{patient.ultimo_antecedente.fecha}</Text>
                           </Flex>
                           <Flex direction='column' w='full' gap='0.5rem' flex='1'>
                             <Text fontSize='md' fontWeight='bold'>
-                              Motivo
+                              {t('patients:antecedent_item.reason')}
                             </Text>
                             <Text fontSize='md'>{patient.ultimo_antecedente.motivo}</Text>
                           </Flex>
                           <Flex direction='column' w='full' gap='0.5rem' flex='1'>
                             <Text fontSize='md' fontWeight='bold'>
-                              Diagnostico
+                              {t('patients:antecedent_item.diagnosis')}
                             </Text>
                             <Text fontSize='md'>{patient.ultimo_antecedente.diagnostico}</Text>
                           </Flex>
@@ -240,11 +243,11 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
                   ) : null}
                   <Flex direction='row' w='full' gap='0.5rem' justify='space-between'>
                     <Badge colorScheme='blue' mr='0.5rem'>
-                      Fecha de ingreso: {formatDatetimeToHuman(patient.fecha_hora_ingreso)}
+                      {t('patients:item.date_entry', { date: formatDatetimeToHuman(patient.fecha_hora_ingreso) })}
                     </Badge>
                     {patient.fecha_hora_egreso ? (
                       <Badge colorScheme='green' mr='0.5rem'>
-                        Fecha de egreso: {formatDatetimeToHuman(patient.fecha_hora_egreso)}
+                        {t('patients:item.date_exit', { date: formatDatetimeToHuman(patient.fecha_hora_egreso) })}
                       </Badge>
                     ) : null}
                   </Flex>
@@ -254,10 +257,10 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
                       View
                     </Button> */}
                     <Button w='full' onClick={() => handlerEditPatient(patient.dni_paciente)}>
-                      Edit
+                      {t('common:actions.edit')}
                     </Button>
                     <Button w='full' onClick={() => handlerDeletePatient(patient.dni_paciente)}>
-                      Delete
+                      {t('common:actions.delete')}
                     </Button>
                   </ButtonGroup>
                 </Flex>
@@ -267,17 +270,17 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
         ) : (
           <Flex direction='column' w='full' justify='center' align='center' py='4rem' px='2rem' bg='white' rounded='lg' shadow='md'>
             <Text fontSize='lg' fontWeight='bold' textTransform='uppercase'>
-              No se encontraron pacientes
+              {t('patients:not_found')}
             </Text>
           </Flex>
         )}
       </Accordion>
       <ButtonGroup shadow='md' size='sm' isAttached variant='outline' w='full' colorScheme='blue' bg='white' rounded='lg'>
         <Button w='full' onClick={(e) => handlerPagination(e)} value='prev' disabled={pagination === 0 || !patients[pagination]}>
-          Prev
+          {t('common:actions.previous')}
         </Button>
         <Button w='full' onClick={(e) => handlerPagination(e)} value='next' disabled={pagination === patients.length - 1 || !patients[pagination]}>
-          Next
+          {t('common:actions.next')}
         </Button>
       </ButtonGroup>
     </MainContainer>
@@ -286,6 +289,7 @@ const Patients = ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
 
 // This gets called on every request
 export const getServerSideProps: GetServerSideProps<{ data: Patients[] }> = async (context: GetServerSidePropsContext) => {
+  const { locale, defaultLocale } = context;
   try {
     const { req, res } = context;
     const session = await unstable_getServerSession(req, res, authOptions);
@@ -309,9 +313,9 @@ export const getServerSideProps: GetServerSideProps<{ data: Patients[] }> = asyn
     const data: Patients[] = await resNurses.data;
 
     // Pass data to the page via props
-    return { props: { data } };
+    return { props: { data, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'patients'])) } };
   } catch (e: Error | AxiosError | any) {
-    return { props: { data: [] as Patients[] } };
+    return { props: { data: [] as Patients[], ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'patients'])) } };
   }
 };
 

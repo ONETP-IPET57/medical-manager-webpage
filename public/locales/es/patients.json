@@ -1,0 +1,168 @@
+{
+  "title": "Pacientes: {{length}}",
+  "search-filter": {
+    "name": "Nombre",
+    "id_card_patient": "DNI del paciente",
+    "birth_date": "Fecha de nacimiento",
+    "gender": "Genero",
+    "phone": "Telefono",
+    "blood_type": "Tipo de sangre"
+  },
+  "item": {
+    "phone": "Telefono",
+    "gender": "Genero",
+    "blood_type": "Tipo de sangre",
+    "birth_date": "Fecha de nacimiento",
+    "id_card_patient": "DNI del paciente",
+    "name": "Nombre",
+    "address": "Direccion",
+    "pathologies": "Patologias",
+    "allergies": "Alergias",
+    "date_entry": "Fecha de ingreso: {{date}}",
+    "date_exit": "Fecha de salida: {{date}}"
+  },
+  "antecedent_item": {
+    "last_antecedent": "Ultimo antecedente",
+    "date": "Fecha",
+    "reason": "Motivo",
+    "diagnosis": "Diagnostico"
+  },
+  "not_found": "No se encontraron pacientes",
+  "not_found_antecedent": "No se encontraron antecedentes",
+  "not_found_pathologies": "No se encontraron patologias",
+  "not_found_allergies": "No se encontraron alergias",
+  "actions": {
+    "add": {
+      "title": "Agregar zona",
+      "name": {
+        "label": "Nombre",
+        "placeholder": "Nombre de la zona"
+      },
+      "lastname": {
+        "label": "Apellido",
+        "placeholder": "Apellido del paciente"
+      },
+      "id_card_patient": {
+        "label": "DNI del paciente",
+        "placeholder": "DNI del paciente"
+      },
+      "birth_date": {
+        "label": "Fecha de nacimiento",
+        "placeholder": "Fecha de nacimiento"
+      },
+      "gender": {
+        "label": "Genero",
+        "placeholder": "Genero",
+        "options": {
+          "male": "Masculino",
+          "female": "Femenino"
+        }
+      },
+      "phone": {
+        "label": "Telefono",
+        "placeholder": "Telefono"
+      },
+      "blood_type": {
+        "label": "Tipo de sangre",
+        "placeholder": "Tipo de sangre",
+        "options": {
+          "A+": "A+",
+          "A-": "A-",
+          "B+": "B+",
+          "B-": "B-",
+          "AB+": "AB+",
+          "AB-": "AB-",
+          "O+": "O+",
+          "O-": "O-"
+        }
+      },
+      "address": {
+        "label": "Direccion",
+        "placeholder": "Direccion"
+      },
+      "pathologies": {
+        "label": "Patologias",
+        "placeholder": "Patologias"
+      },
+      "allergies": {
+        "label": "Alergias",
+        "placeholder": "Alergias"
+      },
+      "date_entry": {
+        "label": "Fecha de ingreso",
+        "placeholder": "Fecha de ingreso"
+      },
+      "date_exit": {
+        "label": "Fecha de salida",
+        "placeholder": "Fecha de salida"
+      },
+      "submit": "Agregar"
+    },
+    "edit": {
+      "title": "Editar zona",
+      "name": {
+        "label": "Nombre",
+        "placeholder": "Nombre de la zona"
+      },
+      "lastname": {
+        "label": "Apellido",
+        "placeholder": "Apellido del paciente"
+      },
+      "id_card_patient": {
+        "label": "DNI del paciente",
+        "placeholder": "DNI del paciente"
+      },
+      "birth_date": {
+        "label": "Fecha de nacimiento",
+        "placeholder": "Fecha de nacimiento"
+      },
+      "gender": {
+        "label": "Genero",
+        "placeholder": "Genero",
+        "options": {
+          "male": "Masculino",
+          "female": "Femenino"
+        }
+      },
+      "phone": {
+        "label": "Telefono",
+        "placeholder": "Telefono"
+      },
+      "blood_type": {
+        "label": "Tipo de sangre",
+        "placeholder": "Tipo de sangre",
+        "options": {
+          "A+": "A+",
+          "A-": "A-",
+          "B+": "B+",
+          "B-": "B-",
+          "AB+": "AB+",
+          "AB-": "AB-",
+          "O+": "O+",
+          "O-": "O-"
+        }
+      },
+      "address": {
+        "label": "Direccion",
+        "placeholder": "Direccion"
+      },
+      "pathologies": {
+        "label": "Patologias",
+        "placeholder": "Patologias"
+      },
+      "allergies": {
+        "label": "Alergias",
+        "placeholder": "Alergias"
+      },
+      "date_entry": {
+        "label": "Fecha de ingreso",
+        "placeholder": "Fecha de ingreso"
+      },
+      "date_exit": {
+        "label": "Fecha de salida",
+        "placeholder": "Fecha de salida"
+      },
+      "submit": "Editar"
+    }
+  }
+}

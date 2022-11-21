@@ -10,6 +10,8 @@ import { BiSearch } from 'react-icons/bi';
 import { useEffect, useState } from 'react';
 import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 export type Zones = {
   id_zona: number;
@@ -38,6 +40,7 @@ export const zoneStates = ['Desocupada', 'Ocupada'];
 const Zones = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { data: session } = useSession();
+  const { t } = useTranslation(['common', 'zones']);
   const [searchFilter, setSearchFilter] = useState<string>('');
   const [searchType, setSearchType] = useState<ZonesKeys>('nombre');
   const [pagination, setPagination] = useState<number>(0);
@@ -119,11 +122,11 @@ const Zones = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
     <MainContainer>
       <HStack p='0.75rem' gap='1rem' flexWrap='wrap'>
         <Heading as='h2' size='lg' textShadow='md'>
-          Zones: {data?.length}
+          {t('zones:title', { length: data?.length })}
         </Heading>
         <IconButton w='min' fontSize='20px' colorScheme='blue' variant='ghost' bg='white' rounded='lg' aria-label='Add Zone' shadow='md' icon={<IoMdAdd />} onClick={() => handlerAddZone()} />
         <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
-          Export
+          {t('common:actions.export')}
         </Button>
 
         <InputGroup bg='white' rounded='lg' shadow='md' flex='1'>
@@ -132,12 +135,12 @@ const Zones = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
         </InputGroup>
 
         <Select defaultValue='nombre' onChange={(e) => handlerSearchType(e)} bg='white' rounded='lg' shadow='md' flex='1'>
-          <option value='nombre'>Nombre</option>
-          <option value='descripcion'>Descripcion</option>
-          <option value='numero'>Numero de zona</option>
-          <option value='estado'>Estado</option>
-          <option value='nombre_paciente'>Paciente</option>
-          <option value='nombre_enfermero'>Enfermero</option>
+          <option value='nombre'>{t('zones:search-filter.name')}</option>
+          <option value='descripcion'>{t('zones:search-filter.description')}</option>
+          <option value='numero'>{t('zones:search-filter.number')}</option>
+          <option value='estado'>{t('zones:search-filter.status')}</option>
+          <option value='nombre_paciente'>{t('zones:search-filter.name_patient')}</option>
+          <option value='nombre_enfermero'>{t('zones:search-filter.name_nurse')}</option>
         </Select>
       </HStack>
       <Grid h='auto' w='full' templateColumns={{ base: 'auto', md: 'repeat(6, 1fr)' }} templateRows='auto' gap='2rem'>
@@ -159,28 +162,24 @@ const Zones = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
                     {zone.descripcion}
                   </Text>
                   <Divider />
-                  <Text size='sm'>Estado: {zone.estado}</Text>
+                  <Text size='sm'>{t('zones:item.state', { state: zone.estado })}</Text>
                   <Divider />
-                  <Text size='sm'>
-                    Paciente: {zone.nombre_paciente} {zone.apellido_paciente}
-                  </Text>
+                  <Text size='sm'>{t('zones:item.patient', { patient: zone.nombre_paciente + ' ' + zone.apellido_paciente })}</Text>
                   <Divider />
-                  <Text size='sm'>
-                    Enfermero: {zone.nombre_enfermero} {zone.apellido_enfermero}
-                  </Text>
+                  <Text size='sm'>{t('zones:item.nurse', { nurse: zone.nombre_enfermero + ' ' + zone.apellido_enfermero })}</Text>
                   <Divider />
                   <Flex direction='row' justifyContent='space-between' alignItems='center'>
                     {/* <Badge colorScheme={zone.status === 'active' ? 'green' : 'red'}>{zone.status}</Badge> */}
-                    <Badge>Lastcall: {zone.id_llamada}</Badge>
-                    <Badge>Zona Numero: {zone.numero}</Badge>
+                    <Badge>{t('zones:item.lastcall', { lastcall: zone.id_llamada })}</Badge>
+                    <Badge>{t('zones:item.number', { number: zone.numero })}</Badge>
                   </Flex>
                   <Divider />
                   <ButtonGroup mt='auto' isAttached size='sm' variant='outline' w='full'>
                     <Button w='full' colorScheme='blue' onClick={() => handlerEditZone(zone.id_zona)}>
-                      Edit
+                      {t('common:actions.edit')}
                     </Button>
                     <Button w='full' colorScheme='blue' onClick={() => handlerDeleteZone(zone.id_zona)}>
-                      Delete
+                      {t('common:actions.delete')}
                     </Button>
                   </ButtonGroup>
                 </Flex>
@@ -190,7 +189,7 @@ const Zones = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
           <GridItem colSpan={6} rowSpan={1} bg='white' rounded='lg' shadow='md'>
             <Flex direction='column' justify='center' align='center' py='4rem' px='2rem'>
               <Text fontSize='lg' fontWeight='bold' textTransform='uppercase'>
-                No se encontraron zonas
+                {t('zones:not_found')}
               </Text>
             </Flex>
           </GridItem>
@@ -198,10 +197,10 @@ const Zones = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
       </Grid>
       <ButtonGroup shadow='md' size='sm' isAttached variant='outline' w='full' colorScheme='blue' bg='white' rounded='lg'>
         <Button w='full' onClick={(e) => handlerPagination(e)} value='prev' disabled={pagination === 0 || !zones[pagination]}>
-          Prev
+          {t('common:actions.previous')}
         </Button>
         <Button w='full' onClick={(e) => handlerPagination(e)} value='next' disabled={pagination === zones.length - 1 || !zones[pagination]}>
-          Next
+          {t('common:actions.next')}
         </Button>
       </ButtonGroup>
     </MainContainer>
@@ -210,6 +209,7 @@ const Zones = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
 
 // This gets called on every request
 export const getServerSideProps: GetServerSideProps<{ data: Zones[] }> = async (context: GetServerSidePropsContext) => {
+  const { locale, defaultLocale } = context;
   try {
     const { req, res } = context;
     const session = await unstable_getServerSession(req, res, authOptions);
@@ -233,9 +233,9 @@ export const getServerSideProps: GetServerSideProps<{ data: Zones[] }> = async (
     const data: Zones[] = await resNurses.data;
 
     // Pass data to the page via props
-    return { props: { data } };
+    return { props: { data, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'zones'])) } };
   } catch (e: Error | AxiosError | any) {
-    return { props: { data: [] as Zones[] } };
+    return { props: { data: [] as Zones[], ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'zones'])) } };
   }
 };
 

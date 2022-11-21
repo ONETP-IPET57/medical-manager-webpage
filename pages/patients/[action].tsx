@@ -11,6 +11,9 @@ import { authOptions } from '../api/auth/[...nextauth]';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { formatDatetimeToHTMLInput, formatDatetimeToSQL, formatDateToHTMLInput } from '../../lib/date';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
+import { BackButton } from '../../components/BackButton';
 
 type Inputs = {
   dni_paciente: number;
@@ -27,11 +30,23 @@ type Inputs = {
   alergia: string;
 };
 
+const bloodType = [
+  { value: 'A+', label: 'A+' },
+  { value: 'A-', label: 'A-' },
+  { value: 'B+', label: 'B+' },
+  { value: 'B-', label: 'B-' },
+  { value: 'AB+', label: 'AB+' },
+  { value: 'AB-', label: 'AB-' },
+  { value: 'O+', label: 'O+' },
+  { value: 'O-', label: 'O-' },
+];
+
 const PatientActions = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { action, id } = router.query;
   const isEdit = action === 'edit';
   const { data: session } = useSession();
+  const { t } = useTranslation(['common', 'patients']);
 
   const {
     register,
@@ -91,17 +106,18 @@ const PatientActions = ({ data }: InferGetServerSidePropsType<typeof getServerSi
     <MainContainer>
       <HStack p='0.75rem' spacing='1rem'>
         <Heading as='h2' size='lg'>
-          Patients
+          {t(`patients:actions.${isEdit ? 'edit' : 'add'}.title`)}
         </Heading>
+        <BackButton />
       </HStack>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Flex direction='column' p='1rem' gap='1rem' bg='white' rounded='xl'>
           <FormControl isInvalid={Boolean(errors.nombre)}>
-            <FormLabel>Name</FormLabel>
+            <FormLabel>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.name.label`)}</FormLabel>
             <Input
               type='text'
               defaultValue={isEdit ? data?.nombre : ''}
-              placeholder={'Add the name of patient'}
+              placeholder={t(`patients:actions.${isEdit ? 'edit' : 'add'}.name.placeholder`)}
               {...register('nombre', {
                 required: 'This is required',
                 minLength: { value: 4, message: 'Minimum length should be 4' },
@@ -111,11 +127,11 @@ const PatientActions = ({ data }: InferGetServerSidePropsType<typeof getServerSi
             <FormErrorMessage>{errors.nombre ? errors.nombre.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.apellido)}>
-            <FormLabel>Lastname</FormLabel>
+            <FormLabel>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.lastname.label`)}</FormLabel>
             <Input
               type='text'
               defaultValue={isEdit ? data?.apellido : ''}
-              placeholder={'Add the lastname of patient'}
+              placeholder={t(`patients:actions.${isEdit ? 'edit' : 'add'}.lastname.placeholder`)}
               {...register('apellido', {
                 required: 'This is required',
                 minLength: { value: 4, message: 'Minimum length should be 4' },
@@ -125,10 +141,10 @@ const PatientActions = ({ data }: InferGetServerSidePropsType<typeof getServerSi
             <FormErrorMessage>{errors.apellido ? errors.apellido.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.dni_paciente)} isDisabled={action === 'edit'}>
-            <FormLabel>DNI</FormLabel>
+            <FormLabel>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.id_card_patient.label`)}</FormLabel>
             <Input
               type='tel'
-              placeholder='Dni'
+              placeholder={t(`patients:actions.${isEdit ? 'edit' : 'add'}.id_card_patients.placeholder`)}
               defaultValue={isEdit ? data?.dni_paciente : ''}
               {...(action === 'add'
                 ? register('dni_paciente', {
@@ -142,9 +158,9 @@ const PatientActions = ({ data }: InferGetServerSidePropsType<typeof getServerSi
             <FormErrorMessage>{errors.dni_paciente ? errors.dni_paciente.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.fecha_nac)}>
-            <FormLabel>Birth date</FormLabel>
+            <FormLabel>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.birth_date.label`)}</FormLabel>
             <Input
-              placeholder='Select the birth date of patient'
+              placeholder={t(`patients:actions.${isEdit ? 'edit' : 'add'}.birth_date.placeholder`)}
               size='md'
               type='date'
               defaultValue={isEdit ? formatDateToHTMLInput(data?.fecha_nac) : ''}
@@ -155,25 +171,25 @@ const PatientActions = ({ data }: InferGetServerSidePropsType<typeof getServerSi
             <FormErrorMessage>{errors.fecha_nac ? errors.fecha_nac.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.sexo)}>
-            <FormLabel>Gender</FormLabel>
+            <FormLabel>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.gender.label`)}</FormLabel>
             <Select
-              placeholder='Select Gender of patient'
+              placeholder={t(`patients:actions.${isEdit ? 'edit' : 'add'}.gender.placeholder`)}
               defaultValue={isEdit ? data?.sexo : ''}
               {...register('sexo', {
                 required: 'This is required',
               })}>
-              <option value='Masculino'>Male</option>
-              <option value='Femenino'>Female</option>
+              <option value='Masculino'>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.gender.options.male`)}</option>
+              <option value='Femenino'>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.gender.options.female`)}</option>
             </Select>
             <FormErrorMessage>{errors.sexo ? errors.sexo.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.telefono)}>
-            <FormLabel>Phone</FormLabel>
+            <FormLabel>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.phone.label`)}</FormLabel>
             <InputGroup>
               <InputLeftElement pointerEvents='none' children={<BiPhone />} />
               <Input
                 type='tel'
-                placeholder='Phone number'
+                placeholder={t(`patients:actions.${isEdit ? 'edit' : 'add'}.phone.placeholder`)}
                 defaultValue={isEdit ? data?.telefono : ''}
                 {...register('telefono', {
                   required: 'This is required',
@@ -186,11 +202,11 @@ const PatientActions = ({ data }: InferGetServerSidePropsType<typeof getServerSi
             <FormErrorMessage>{errors.telefono ? errors.telefono.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.direccion)}>
-            <FormLabel>Address</FormLabel>
+            <FormLabel>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.address.label`)}</FormLabel>
             <Input
               type='text'
               defaultValue={isEdit ? data?.direccion : ''}
-              placeholder={'Add the address of patient'}
+              placeholder={t(`patients:actions.${isEdit ? 'edit' : 'add'}.address.placeholder`)}
               {...register('direccion', {
                 required: 'This is required',
                 minLength: { value: 4, message: 'Minimum length should be 4' },
@@ -200,9 +216,9 @@ const PatientActions = ({ data }: InferGetServerSidePropsType<typeof getServerSi
             <FormErrorMessage>{errors.direccion ? errors.direccion.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.fecha_hora_ingreso)}>
-            <FormLabel>Entry day</FormLabel>
+            <FormLabel>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.date_entry.label`)}</FormLabel>
             <Input
-              placeholder='Select the Entry day of patient'
+              placeholder={t(`patients:actions.${isEdit ? 'edit' : 'add'}date_entry.placeholder`)}
               size='md'
               type='datetime-local'
               defaultValue={isEdit ? formatDatetimeToHTMLInput(data?.fecha_hora_ingreso) : ''}
@@ -213,31 +229,32 @@ const PatientActions = ({ data }: InferGetServerSidePropsType<typeof getServerSi
             <FormErrorMessage>{errors.fecha_hora_ingreso ? errors.fecha_hora_ingreso.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.fecha_hora_egreso)}>
-            <FormLabel>Exit day</FormLabel>
-            <Input placeholder='Select the Exit day of patient' size='md' type='datetime-local' defaultValue={isEdit ? formatDatetimeToHTMLInput(data?.fecha_hora_egreso) : ''} {...register('fecha_hora_egreso')} />
+            <FormLabel>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.date_exit.label`)}</FormLabel>
+            <Input placeholder={t(`patients:actions.${isEdit ? 'edit' : 'add'}.date_exit.placeholder`)} size='md' type='datetime-local' defaultValue={isEdit ? formatDatetimeToHTMLInput(data?.fecha_hora_egreso) : ''} {...register('fecha_hora_egreso')} />
             <FormErrorMessage>{errors.fecha_hora_egreso ? errors.fecha_hora_egreso.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.tipo_sangre)}>
-            <FormLabel>Tipo sangre</FormLabel>
+            <FormLabel>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.blood_type.label`)}</FormLabel>
             <Select
-              placeholder='Select blood type of patient'
+              placeholder={t(`patients:actions.${isEdit ? 'edit' : 'add'}.blood_type.placeholder`)}
               defaultValue={isEdit ? data?.tipo_sangre : ''}
               {...register('tipo_sangre', {
                 required: 'This is required',
               })}>
-              <option value='A'>A</option>
-              <option value='B'>B</option>
-              <option value='AB'>AB</option>
-              <option value='O'>O</option>
+              {bloodType.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {t(`patients:actions.${isEdit ? 'edit' : 'add'}.blood_type.options.${item.label}`)}
+                </option>
+              ))}
             </Select>
             <FormErrorMessage>{errors.tipo_sangre ? errors.tipo_sangre.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.patologia)}>
-            <FormLabel>Patologias</FormLabel>
+            <FormLabel>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.pathologies.label`)}</FormLabel>
             <Input
               type='text'
               defaultValue={isEdit ? data?.patologia : ''}
-              placeholder={'Add the address of patient'}
+              placeholder={t(`patients:actions.${isEdit ? 'edit' : 'add'}.pathologies.placeholder`)}
               {...register('patologia', {
                 required: 'This is required',
                 minLength: { value: 4, message: 'Minimum length should be 4' },
@@ -247,11 +264,11 @@ const PatientActions = ({ data }: InferGetServerSidePropsType<typeof getServerSi
             <FormErrorMessage>{errors.patologia ? errors.patologia.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.alergia)}>
-            <FormLabel>Alergias</FormLabel>
+            <FormLabel>{t(`patients:actions.${isEdit ? 'edit' : 'add'}.allergies.label`)}</FormLabel>
             <Input
               type='text'
               defaultValue={isEdit ? data?.alergia : ''}
-              placeholder={'Add the address of patient'}
+              placeholder={t(`patients:actions.${isEdit ? 'edit' : 'add'}.allergies.placeholder`)}
               {...register('alergia', {
                 required: 'This is required',
                 minLength: { value: 4, message: 'Minimum length should be 4' },
@@ -262,7 +279,7 @@ const PatientActions = ({ data }: InferGetServerSidePropsType<typeof getServerSi
           </FormControl>
           <Divider />
           <Button colorScheme='blue' variant='solid' rounded='md' w='full' type='submit'>
-            Submit
+            {t(`patients:actions.${isEdit ? 'edit' : 'add'}.submit`)}
           </Button>
         </Flex>
       </form>
@@ -272,6 +289,7 @@ const PatientActions = ({ data }: InferGetServerSidePropsType<typeof getServerSi
 
 // This gets called on every request
 export const getServerSideProps: GetServerSideProps<{ data: Patients | null }> = async (context: any) => {
+  const { locale, defaultLocale } = context;
   try {
     const session = await unstable_getServerSession(context.req, context.res, authOptions);
 
@@ -298,9 +316,9 @@ export const getServerSideProps: GetServerSideProps<{ data: Patients | null }> =
     }
 
     // Pass data to the page via props
-    return { props: { data } };
+    return { props: { data, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'patients'])) } };
   } catch (e) {
-    return { props: { data: null } };
+    return { props: { data: null, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'patients'])) } };
   }
 };
 

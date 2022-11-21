@@ -1,0 +1,14 @@
+{
+  "title": "Inicia sesion",
+  "description": "Inicia sesion para poder ingresar al sistema",
+  "username": {
+    "label": "Usuario",
+    "placeholder": "Ingresa tu usuario"
+  },
+  "password": {
+    "label": "Contraseña",
+    "placeholder": "Ingresa tu contraseña"
+  },
+  "submit": "Iniciar",
+  "welcome": "Bienvenido a \n Medical 57"
+}

@@ -1,0 +1,41 @@
+{
+  "menu": {
+    "home": "Inicio",
+    "zones": "Zonas",
+    "patients": "Pacientes",
+    "nurses": "Enfermeros",
+    "doctors": "Doctores",
+    "calls": "Llamadas",
+    "statistics": "Estadisticas",
+    "alerts": "Alertas",
+    "users": "Usuarios",
+    "settings": "Configuración",
+    "logout": "Desloguearse",
+    "welcome": "Bienvenido: {{username}}",
+    "download": {
+      "app": "Descargar Aplicacion",
+      "help": "Manual"
+    }
+  },
+  "roles": {
+    "admin": "Administrador",
+    "doctor": "Doctor",
+    "nurse": "Enfermero",
+    "patient": "Paciente",
+    "user": "Usuario"
+  },
+  "actions": {
+    "export": "Exportar",
+    "add": "Añadir",
+    "edit": "Editar",
+    "delete": "Borrar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "search": "Buscar",
+    "clear": "Limpiar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior"
+  }
+}

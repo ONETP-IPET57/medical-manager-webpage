@@ -11,6 +11,8 @@ import { BiSearch } from 'react-icons/bi';
 import { formatDateToHuman } from '../../lib/date';
 import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 export type Nurses = {
   dni_enfermero: number;
@@ -28,11 +30,12 @@ type NursesKeysString = {
 
 export type NursesKeys = keyof NursesKeysString;
 
-export const nurseState = ['No activo', 'Desocupado', 'Ocupado'];
+export const nurseState = ['inactive', 'available', 'busy'];
 
 const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { data: session } = useSession();
+  const { t } = useTranslation(['common', 'nurses']);
   const [searchFilter, setSearchFilter] = useState<string>('');
   const [searchType, setSearchType] = useState<NursesKeys>('nombre');
   const [pagination, setPagination] = useState<number>(0);
@@ -111,11 +114,11 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
     <MainContainer>
       <HStack p='0.75rem' gap='1rem' flexWrap='wrap'>
         <Heading as='h2' size='lg'>
-          Nurses {data?.length}
+          {t('nurses:title', { length: data?.length })}
         </Heading>
         <IconButton w='min' fontSize='20px' colorScheme='blue' variant='ghost' bg='white' rounded='lg' aria-label='Add Zone' shadow='md' icon={<IoMdAdd />} onClick={() => handlerAddNurse()} />
         <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
-          Export
+          {t('common:actions.export')}
         </Button>
 
         <InputGroup bg='white' rounded='lg' shadow='md' flex='1'>
@@ -124,11 +127,11 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
         </InputGroup>
 
         <Select defaultValue='nombre' onChange={(e) => handlerSearchType(e)} bg='white' rounded='lg' shadow='md' flex='1'>
-          <option value='nombre'>Nombre</option>
-          <option value='dni_enfermero'>DNI</option>
-          <option value='fecha_nac'>Fecha de nacimiento</option>
-          <option value='sexo'>Genero</option>
-          <option value='telefono'>Telefono</option>
+          <option value='nombre'>{t('nurses:search-filter.name')}</option>
+          <option value='dni_enfermero'>{t('nurses:search-filter.id_card_nurse')}</option>
+          <option value='fecha_nac'>{t('nurses:search-filter.birth_date')}</option>
+          <option value='sexo'>{t('nurses:search-filter.gender')}</option>
+          <option value='telefono'>{t('nurses:search-filter.phone')}</option>
         </Select>
       </HStack>
       <Grid h='auto' w='full' templateColumns={{ base: 'auto', md: 'repeat(6, 1fr)' }} templateRows='auto' gap='2rem'>
@@ -137,7 +140,7 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
             .map((nurse) => {
               return {
                 ...nurse,
-                estado: nurseState[nurse.estado],
+                estado: t(`nurses:item.status_options.${nurseState[nurse.estado]}`),
               };
             })
             .map((nurse) => (
@@ -157,13 +160,13 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
                     <Flex direction='row' w='full' gap='0.5rem'>
                       <Flex direction='column' w='full' gap='0.5rem'>
                         <Text fontSize='md' fontWeight='bold'>
-                          Estado
+                          {t('nurses:item.status')}
                         </Text>
                         <Text fontSize='md'>{nurse.estado}</Text>
                       </Flex>
                       <Flex direction='column' w='full' gap='0.5rem'>
                         <Text fontSize='md' fontWeight='bold'>
-                          Fecha de nacimiento
+                          {t('nurses:item.birth_date')}
                         </Text>
                         <Text fontSize='md'>{formatDateToHuman(nurse.fecha_nac)}</Text>
                       </Flex>
@@ -172,13 +175,13 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
                     <Flex direction='row' w='full' gap='0.5rem'>
                       <Flex direction='column' w='full' gap='0.5rem'>
                         <Text fontSize='md' fontWeight='bold'>
-                          Telefono
+                          {t('nurses:item.phone')}
                         </Text>
                         <Text fontSize='md'>{nurse.telefono}</Text>
                       </Flex>
                       <Flex direction='column' w='full' gap='0.5rem'>
                         <Text fontSize='md' fontWeight='bold'>
-                          Genero
+                          {t('nurses:item.gender')}
                         </Text>
                         <Text fontSize='md'>{nurse.sexo}</Text>
                       </Flex>
@@ -188,10 +191,10 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
                   <Divider />
                   <ButtonGroup w='full' isAttached size='sm' variant='outline'>
                     <Button w='full' colorScheme='blue' onClick={() => handlerEditNurse(nurse.dni_enfermero)}>
-                      Edit
+                      {t('common:actions.edit')}
                     </Button>
                     <Button w='full' colorScheme='blue' onClick={() => handlerDeleteNurse(nurse.dni_enfermero)}>
-                      Delete
+                      {t('common:actions.delete')}
                     </Button>
                   </ButtonGroup>
                 </Flex>
@@ -201,7 +204,7 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
           <GridItem colSpan={6} rowSpan={1} bg='white' rounded='lg' shadow='md'>
             <Flex direction='column' justify='center' align='center' py='4rem' px='2rem'>
               <Text fontSize='lg' fontWeight='bold' textTransform='uppercase'>
-                No se encontraron enfermer@s
+                {t('nurses:not_found')}
               </Text>
             </Flex>
           </GridItem>
@@ -209,10 +212,10 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
       </Grid>
       <ButtonGroup shadow='md' size='sm' isAttached variant='outline' w='full' colorScheme='blue' bg='white' rounded='lg'>
         <Button w='full' onClick={(e) => handlerPagination(e)} value='prev' disabled={pagination === 0 || !nurses[pagination]}>
-          Prev
+          {t('common:actions.previous')}
         </Button>
         <Button w='full' onClick={(e) => handlerPagination(e)} value='next' disabled={pagination === nurses.length - 1 || !nurses[pagination]}>
-          Next
+          {t('common:actions.next')}
         </Button>
       </ButtonGroup>
     </MainContainer>
@@ -221,6 +224,7 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
 
 // This gets called on every request
 export const getServerSideProps: GetServerSideProps<{ data: Nurses[] }> = async (context: GetServerSidePropsContext) => {
+  const { locale, defaultLocale } = context;
   try {
     const { req, res } = context;
     const session = await unstable_getServerSession(req, res, authOptions);
@@ -244,9 +248,9 @@ export const getServerSideProps: GetServerSideProps<{ data: Nurses[] }> = async 
     const data: Nurses[] = await resNurses.data;
 
     // Pass data to the page via props
-    return { props: { data } };
+    return { props: { data, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'nurses'])) } };
   } catch (e: Error | AxiosError | any) {
-    return { props: { data: [] as Nurses[] } };
+    return { props: { data: [] as Nurses[], ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'nurses'])) } };
   }
 };
 

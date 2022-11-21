@@ -1,0 +1,134 @@
+{
+  "title": "Enfermeros: {{length}}",
+  "search-filter": {
+    "name": "Nombre",
+    "id_card_nurse": "DNI del enfermero",
+    "birth_date": "Fecha de nacimiento",
+    "gender": "Genero",
+    "phone": "Telefono"
+  },
+  "item": {
+    "phone": "Telefono",
+    "gender": "Genero",
+    "birth_date": "Fecha de nacimiento",
+    "id_card_nurse": "DNI del enfermero",
+    "name": "Nombre",
+    "address": "Direccion",
+    "status": "Estado",
+    "status_options": {
+      "busy": "Ocupado",
+      "available": "Disponible",
+      "inactive": "Inactivo"
+    }
+  },
+  "not_found": "No se encontraron enfermeros/medicos",
+  "actions": {
+    "add": {
+      "title": "Agregar zona",
+      "name": {
+        "label": "Nombre",
+        "placeholder": "Nombre de la zona"
+      },
+      "lastname": {
+        "label": "Apellido",
+        "placeholder": "Apellido del paciente"
+      },
+      "id_card_nurse": {
+        "label": "DNI del enfermero",
+        "placeholder": "DNI del enfermero"
+      },
+      "birth_date": {
+        "label": "Fecha de nacimiento",
+        "placeholder": "Fecha de nacimiento"
+      },
+      "gender": {
+        "label": "Genero",
+        "placeholder": "Genero",
+        "options": {
+          "male": "Masculino",
+          "female": "Femenino"
+        }
+      },
+      "phone": {
+        "label": "Telefono",
+        "placeholder": "Telefono"
+      },
+      "status": {
+        "label": "Estado",
+        "placeholder": "Estado del enfermero",
+        "options": {
+          "busy": "Ocupado",
+          "available": "Disponible",
+          "inactive": "Inactivo"
+        }
+      },
+      "submit": "Agregar"
+    },
+    "edit": {
+      "title": "Editar zona",
+      "name": {
+        "label": "Nombre",
+        "placeholder": "Nombre de la zona"
+      },
+      "lastname": {
+        "label": "Apellido",
+        "placeholder": "Apellido del paciente"
+      },
+      "id_card_patient": {
+        "label": "DNI del paciente",
+        "placeholder": "DNI del paciente"
+      },
+      "birth_date": {
+        "label": "Fecha de nacimiento",
+        "placeholder": "Fecha de nacimiento"
+      },
+      "gender": {
+        "label": "Genero",
+        "placeholder": "Genero",
+        "options": {
+          "male": "Masculino",
+          "female": "Femenino"
+        }
+      },
+      "phone": {
+        "label": "Telefono",
+        "placeholder": "Telefono"
+      },
+      "blood_type": {
+        "label": "Tipo de sangre",
+        "placeholder": "Tipo de sangre",
+        "options": {
+          "A+": "A+",
+          "A-": "A-",
+          "B+": "B+",
+          "B-": "B-",
+          "AB+": "AB+",
+          "AB-": "AB-",
+          "O+": "O+",
+          "O-": "O-"
+        }
+      },
+      "address": {
+        "label": "Direccion",
+        "placeholder": "Direccion"
+      },
+      "pathologies": {
+        "label": "Patologias",
+        "placeholder": "Patologias"
+      },
+      "allergies": {
+        "label": "Alergias",
+        "placeholder": "Alergias"
+      },
+      "date_entry": {
+        "label": "Fecha de ingreso",
+        "placeholder": "Fecha de ingreso"
+      },
+      "date_exit": {
+        "label": "Fecha de salida",
+        "placeholder": "Fecha de salida"
+      },
+      "submit": "Editar"
+    }
+  }
+}

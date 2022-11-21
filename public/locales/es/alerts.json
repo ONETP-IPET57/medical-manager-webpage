@@ -1,0 +1,8 @@
+{
+  "title": "Alerta de emergencia",
+  "blue_code": "Enviar alerta de codigo azul",
+  "views": {
+    "to_nurse": "Ir a la vista de enfermero",
+    "to_alert": "Ir a la vista de alerta"
+  }
+}

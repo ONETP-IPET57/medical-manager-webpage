@@ -10,6 +10,8 @@ import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 export type User = {
   id_user: number;
@@ -25,9 +27,12 @@ type UserKeysString = {
 
 export type UserKeys = keyof UserKeysString;
 
+export const usersRole = ['user', 'admin'];
+
 const Users = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { data: session } = useSession();
+  const { t } = useTranslation(['common', 'users']);
   const [searchFilter, setSearchFilter] = useState<string>('');
   const [searchType, setSearchType] = useState<UserKeys>('username');
   const [pagination, setPagination] = useState<number>(0);
@@ -105,11 +110,11 @@ const Users = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
     <MainContainer>
       <HStack p='0.75rem' gap='1rem' flexWrap='wrap'>
         <Heading as='h2' size='lg'>
-          Users: {data?.length}
+          {t('users:title', { length: data?.length })}
         </Heading>
         <IconButton w='min' fontSize='20px' colorScheme='blue' variant='ghost' bg='white' rounded='lg' aria-label='Add User' shadow='md' icon={<IoMdAdd />} onClick={() => handlerAddUser()} />
         <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
-          Export
+          {t('common:actions.export')}
         </Button>
 
         <InputGroup bg='white' rounded='lg' shadow='md' flex='1'>
@@ -118,9 +123,9 @@ const Users = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
         </InputGroup>
 
         <Select defaultValue='nombre' onChange={(e) => handlerSearchType(e)} bg='white' rounded='lg' shadow='md' flex='1'>
-          <option value='username'>Username</option>
-          <option value='email'>Email</option>
-          <option value='role'>Rol</option>
+          <option value='username'>{t('users:search-filter.username')}</option>
+          <option value='email'>{t('users:search-filter.email')}</option>
+          <option value='role'>{t('users:search-filter.role')}</option>
         </Select>
       </HStack>
       <Grid h='auto' w='full' templateColumns={{ base: 'auto', md: 'repeat(6, 1fr)' }} templateRows='auto' gap='2rem'>
@@ -135,24 +140,24 @@ const Users = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
                 <Flex direction='row' w='full' gap='0.5rem'>
                   <Flex direction='column' w='full' gap='0.5rem' flex='1'>
                     <Text fontSize='md' fontWeight='bold'>
-                      Email
+                      {t('users:item.email')}
                     </Text>
                     <Text fontSize='md'>{user.email}</Text>
                   </Flex>
                   <Flex direction='column' w='full' gap='0.5rem' flex='1'>
                     <Text fontSize='md' fontWeight='bold'>
-                      Rol
+                      {t('users:item.role')}
                     </Text>
-                    <Text fontSize='md'>{user.role}</Text>
+                    <Text fontSize='md'>{t(`users:actions.add.role.options.${usersRole[parseInt(user.role)]}`)}</Text>
                   </Flex>
                 </Flex>
                 <Divider />
                 <ButtonGroup mt='auto' isAttached size='sm' variant='outline' w='full'>
                   <Button w='full' colorScheme='blue' onClick={() => handlerEditUser(user.id_user)}>
-                    Edit
+                    {t('common:actions.edit')}
                   </Button>
                   <Button w='full' colorScheme='blue' onClick={() => handlerDeleteUser(user.id_user)}>
-                    Delete
+                    {t('common:actions.delete')}
                   </Button>
                 </ButtonGroup>
               </Flex>
@@ -162,7 +167,7 @@ const Users = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
           <GridItem colSpan={6} rowSpan={1} bg='white' rounded='lg' shadow='md'>
             <Flex direction='column' justify='center' align='center' py='4rem' px='2rem'>
               <Text fontSize='lg' fontWeight='bold' textTransform='uppercase'>
-                No se encontraron usuarios
+                {t('users:not_found')}
               </Text>
             </Flex>
           </GridItem>
@@ -170,10 +175,10 @@ const Users = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
       </Grid>
       <ButtonGroup shadow='md' size='sm' isAttached variant='outline' w='full' colorScheme='blue' bg='white' rounded='lg'>
         <Button w='full' onClick={(e) => handlerPagination(e)} value='prev' disabled={pagination === 0 || !users[pagination]}>
-          Prev
+          {t('common:actions.previous')}
         </Button>
         <Button w='full' onClick={(e) => handlerPagination(e)} value='next' disabled={pagination === users.length - 1 || !users[pagination]}>
-          Next
+          {t('common:actions.next')}
         </Button>
       </ButtonGroup>
     </MainContainer>
@@ -182,6 +187,7 @@ const Users = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
 
 // This gets called on every request
 export const getServerSideProps: GetServerSideProps<{ data: User[] }> = async (context: GetServerSidePropsContext) => {
+  const { locale, defaultLocale } = context;
   try {
     const { req, res } = context;
     const session = await unstable_getServerSession(req, res, authOptions);
@@ -205,9 +211,9 @@ export const getServerSideProps: GetServerSideProps<{ data: User[] }> = async (c
     const data: User[] = await resUsers.data;
 
     // Pass data to the page via props
-    return { props: { data } };
+    return { props: { data, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'users'])) } };
   } catch (e: Error | AxiosError | any) {
-    return { props: { data: [] as User[] } };
+    return { props: { data: [] as User[], ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'users'])) } };
   }
 };
 

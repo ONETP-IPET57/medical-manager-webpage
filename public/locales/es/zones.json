@@ -1,0 +1,103 @@
+{
+  "title": "Zonas: {{length}}",
+  "search-filter": {
+    "name": "Nombre",
+    "description": "Descripción",
+    "status": "Estado",
+    "number": "Numero de zona",
+    "name_patient": "Nombre del paciente",
+    "name_nurse": "Nombre del enfermero"
+  },
+  "item": {
+    "state": "Estado: {{state}}",
+    "patient": "Paciente: {{patient}}",
+    "nurse": "Enfermero: {{nurse}}",
+    "number": "Numero de zona: {{number}}",
+    "description": "Descripción: {{description}}",
+    "name": "Nombre: {{name}}",
+    "lastcall": "Ultima llamada: {{lastcall}}"
+  },
+  "not_found": "No se encontraron zonas",
+  "actions": {
+    "add": {
+      "title": "Agregar zona",
+      "name": {
+        "title": "Nombre",
+        "placeholder": "Nombre de la zona"
+      },
+      "description": {
+        "title": "Descripción",
+        "placeholder": "Descripción de la zona"
+      },
+      "number": {
+        "title": "Numero de zona",
+        "placeholder": "Numero de la zona"
+      },
+      "patient": {
+        "title": "Paciente",
+        "placeholder": "Paciente de la zona"
+      },
+      "nurse": {
+        "title": "Enfermero",
+        "placeholder": "Enfermero de la zona"
+      },
+      "state": {
+        "title": "Estado",
+        "placeholder": "Estado de la zona",
+        "options": {
+          "active": "Ocupada",
+          "inactive": "Desocupada"
+        }
+      },
+      "form_call": {
+        "title": "Forma de llamada",
+        "placeholder": "Forma de llamada de la zona",
+        "options": {
+          "call": "Llamada",
+          "message": "Mensaje"
+        }
+      },
+      "submit": "Agregar"
+    },
+    "edit": {
+      "title": "Editar zona",
+      "name": {
+        "title": "Nombre",
+        "placeholder": "Nombre de la zona"
+      },
+      "description": {
+        "title": "Descripción",
+        "placeholder": "Descripción de la zona"
+      },
+      "number": {
+        "title": "Numero de zona",
+        "placeholder": "Numero de la zona"
+      },
+      "patient": {
+        "title": "Paciente",
+        "placeholder": "Paciente de la zona"
+      },
+      "nurse": {
+        "title": "Enfermero",
+        "placeholder": "Enfermero de la zona"
+      },
+      "state": {
+        "title": "Estado",
+        "placeholder": "Estado de la zona",
+        "options": {
+          "active": "Ocupada",
+          "inactive": "Desocupada"
+        }
+      },
+      "form_call": {
+        "title": "Forma de llamada",
+        "placeholder": "Forma de llamada de la zona",
+        "options": {
+          "call": "Llamada",
+          "message": "Mensaje"
+        }
+      },
+      "submit": "Editar"
+    }
+  }
+}

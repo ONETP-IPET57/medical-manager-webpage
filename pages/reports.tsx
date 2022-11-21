@@ -12,8 +12,11 @@ import { compareMinutesAndShowDiff, getAge, getAverage } from '../lib/date';
 import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]';
 import { Call } from './calls';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const { t } = useTranslation(['common', 'reports']);
   const [dataChart, setDataChart] = useState<ChartData<'bar'> | undefined>(undefined);
   const [dataChartZonesState, setDataChartZonesState] = useState<ChartData<'pie'> | undefined>(undefined);
   const [dataChartZonesFormaLlamada, setDataChartZonesFormaLlamada] = useState<ChartData<'pie'> | undefined>(undefined);
@@ -196,17 +199,17 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
     <MainContainer>
       <HStack p='0.75rem' spacing='1rem'>
         <Heading as='h2' size='lg'>
-          Reports
+          {t('reports:title')}
         </Heading>
         <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
-          Export
+          {t('common:actions.export')}
         </Button>
       </HStack>
       <Grid h='auto' w='full' templateColumns={{ base: 'auto', md: 'repeat(6, 1fr)' }} templateRows='auto' gap='2rem'>
         <GridItem rowSpan={1} colSpan={{ base: 1, md: 3 }} bg='white' p='0.75rem' rounded='lg'>
           <Flex direction='column' gap='1rem' h='full' p='1rem'>
             <Heading as='h3' size='md'>
-              Genero
+              {t('reports:item.gender')}
             </Heading>
             {dataChart && Object.keys(dataChart).length > 0 ? <BarChartChakra options={chartOptions} data={dataChart} /> : null}
           </Flex>
@@ -214,7 +217,7 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
         <GridItem rowSpan={1} colSpan={{ base: 1, md: 3 }} bg='white' p='0.75rem' rounded='lg'>
           <Flex direction='column' gap='1rem' h='full' align='flex-start' p='1rem'>
             <Heading as='h3' size='md'>
-              Tiempo promedio en respuesta de llamadas
+              {t('reports:item.average_time_answer_calls')}
             </Heading>
             <Text fontWeight='bold' fontSize='4xl'>
               {averageCall}min
@@ -224,7 +227,7 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
         <GridItem rowSpan={1} colSpan={{ base: 1, md: 3 }} bg='white' p='0.75rem' rounded='lg'>
           <Flex direction='column' gap='1rem' h='full' p='1rem'>
             <Heading as='h3' size='md'>
-              Estado de zonas
+              {t('reports:item.zones_status')}
             </Heading>
             {dataChartZonesState && Object.keys(dataChartZonesState).length > 0 ? <PieChartChakra options={chartOptionsPie} data={dataChartZonesState} /> : null}
           </Flex>
@@ -232,7 +235,7 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
         <GridItem rowSpan={1} colSpan={{ base: 1, md: 3 }} bg='white' p='0.75rem' rounded='lg'>
           <Flex direction='column' gap='1rem' h='full' p='1rem'>
             <Heading as='h3' size='md'>
-              Forma de llamada
+              {t('reports:item.form_call')}
             </Heading>
             {dataChartZonesFormaLlamada && Object.keys(dataChartZonesFormaLlamada).length > 0 ? <PieChartChakra options={chartOptionsPie} data={dataChartZonesFormaLlamada} /> : null}
           </Flex>
@@ -240,7 +243,7 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
         <GridItem rowSpan={1} colSpan={{ base: 1, md: 6 }} bg='white' p='0.75rem' rounded='lg'>
           <Flex direction='column' gap='1rem' h='full' p='1rem'>
             <Heading as='h3' size='md'>
-              Promedio de edad
+              {t('reports:item.average_age')}
             </Heading>
             {dataChartAgePatients && Object.keys(dataChartAgePatients).length > 0 ? <BarChartChakra options={chartOptionsVertical} data={dataChartAgePatients} /> : null}
           </Flex>
@@ -248,7 +251,7 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
         <GridItem rowSpan={1} colSpan={{ base: 1, md: 3 }} bg='white' p='0.75rem' rounded='lg'>
           <Flex direction='column' gap='1rem' h='full' p='1rem'>
             <Heading as='h3' size='md'>
-              Estado de Medicos
+              {t('reports:item.nurses_status')}
             </Heading>
             {dataChartNurseState && Object.keys(dataChartNurseState).length > 0 ? <PieChartChakra options={chartOptionsPie} data={dataChartNurseState} /> : null}
           </Flex>
@@ -260,6 +263,7 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
 
 // This gets called on every request
 export const getServerSideProps: GetServerSideProps<{ dataZones: Zones[]; dataNurses: Nurses[]; dataPatients: Patients[]; dataCalls: Call[] }> = async (context: GetServerSidePropsContext) => {
+  const { locale, defaultLocale } = context;
   try {
     const { req, res } = context;
     const session = await unstable_getServerSession(req, res, authOptions);
@@ -310,9 +314,9 @@ export const getServerSideProps: GetServerSideProps<{ dataZones: Zones[]; dataNu
     const dataCalls: Call[] = await resCalls.data;
 
     // Pass data to the page via props
-    return { props: { dataZones, dataNurses, dataPatients, dataCalls } };
+    return { props: { dataZones, dataNurses, dataPatients, dataCalls, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'reports'])) } };
   } catch (e: any) {
-    return { props: { dataZones: [] as Zones[], dataNurses: [] as Nurses[], dataPatients: [] as Patients[], dataCalls: [] as Call[] } };
+    return { props: { dataZones: [] as Zones[], dataNurses: [] as Nurses[], dataPatients: [] as Patients[], dataCalls: [] as Call[], ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'reports'])) } };
   }
 };
 

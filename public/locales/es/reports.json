@@ -1,0 +1,11 @@
+{
+  "title": "Reportes estadisticos",
+  "item": {
+    "gender": "Genero",
+    "average_time_answer_calls": "Tiempo promedio de respuestas de llamadas",
+    "zones_status": "Estado de zonas",
+    "form_call": "Forma de llamadas",
+    "average_age": "Promedio de edad",
+    "nurses_status": "Estado de Enfermeros"
+  }
+}

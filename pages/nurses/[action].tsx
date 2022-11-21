@@ -11,6 +11,9 @@ import { authOptions } from '../api/auth/[...nextauth]';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { formatDateToSQL, formatDateToHTMLInput } from '../../lib/date';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
+import { BackButton } from '../../components/BackButton';
 
 type Inputs = {
   dni_enfermero: string;
@@ -27,6 +30,7 @@ const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSide
   const { action, id } = router.query;
   const isEdit = action === 'edit';
   const { data: session } = useSession();
+  const { t } = useTranslation(['common', 'nurses']);
 
   const {
     register,
@@ -87,17 +91,18 @@ const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSide
     <MainContainer>
       <HStack p='0.75rem' spacing='1rem'>
         <Heading as='h2' size='lg'>
-          Nurses
+          {t(`nurses:actions.${isEdit ? 'edit' : 'add'}.title`)}
         </Heading>
+        <BackButton />
       </HStack>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Flex direction='column' p='1rem' gap='1rem' bg='white' rounded='xl'>
           <FormControl isInvalid={Boolean(errors.nombre)}>
-            <FormLabel>Name</FormLabel>
+            <FormLabel>{t(`nurses:actions.${isEdit ? 'edit' : 'add'}.name.label`)}</FormLabel>
             <Input
               type='text'
               defaultValue={isEdit ? data?.nombre : ''}
-              placeholder={'Add the name of patient'}
+              placeholder={t(`nurses:actions.${isEdit ? 'edit' : 'add'}.name.placeholder`)}
               {...register('nombre', {
                 required: 'This is required',
                 minLength: { value: 4, message: 'Minimum length should be 4' },
@@ -107,11 +112,11 @@ const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSide
             <FormErrorMessage>{errors.nombre ? errors.nombre.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl>
-            <FormLabel>Lastname</FormLabel>
+            <FormLabel>{t(`nurses:actions.${isEdit ? 'edit' : 'add'}.lastname.label`)}</FormLabel>
             <Input
               type='text'
               defaultValue={isEdit ? data?.apellido : ''}
-              placeholder={'Add the lastname of patient'}
+              placeholder={t(`nurses:actions.${isEdit ? 'edit' : 'add'}.lastname.placeholder`)}
               {...register('apellido', {
                 required: 'This is required',
                 minLength: { value: 4, message: 'Minimum length should be 4' },
@@ -121,10 +126,10 @@ const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSide
             <FormErrorMessage>{errors.apellido ? errors.apellido.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.dni_enfermero)}>
-            <FormLabel>DNI</FormLabel>
+            <FormLabel>{t(`nurses:actions.${isEdit ? 'edit' : 'add'}.id_card_nurse.label`)}</FormLabel>
             <Input
               type='tel'
-              placeholder='Dni'
+              placeholder={t(`nurses:actions.${isEdit ? 'edit' : 'add'}.id_card_nurse.placeholder`)}
               defaultValue={isEdit ? data?.dni_enfermero : ''}
               {...register('dni_enfermero', {
                 required: 'This is required',
@@ -136,9 +141,9 @@ const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSide
             <FormErrorMessage>{errors.dni_enfermero ? errors.dni_enfermero.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.fecha_nac)}>
-            <FormLabel>Birth date</FormLabel>
+            <FormLabel>{t(`nurses:actions.${isEdit ? 'edit' : 'add'}.birth_date.label`)}</FormLabel>
             <Input
-              placeholder='Select the birth date of patient'
+              placeholder={t(`nurses:actions.${isEdit ? 'edit' : 'add'}.birth_date.placeholder`)}
               size='md'
               type='date'
               defaultValue={isEdit ? formatDateToHTMLInput(data?.fecha_nac) : ''}
@@ -149,42 +154,41 @@ const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSide
             <FormErrorMessage>{errors.fecha_nac ? errors.fecha_nac.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.estado)}>
-            <FormLabel>Estado</FormLabel>
+            <FormLabel>{t(`nurses:actions.${isEdit ? 'edit' : 'add'}.status.label`)}</FormLabel>
             <Select
-              placeholder='Select estado'
+              placeholder={t(`nurses:actions.${isEdit ? 'edit' : 'add'}.status.placeholder`)}
               defaultValue={isEdit ? data?.estado : ''}
               {...register('estado', {
                 required: 'This is required',
               })}>
               {nurseState.map((item, id) => (
                 <option key={id} value={id}>
-                  {item}
+                  {t(`nurses:item.status_options.${item}`)}
                 </option>
               ))}
             </Select>
             <FormErrorMessage>{errors.estado ? errors.estado.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.sexo)}>
-            <FormLabel>Gender</FormLabel>
+            <FormLabel>{t(`nurses:actions.${isEdit ? 'edit' : 'add'}.gender.label`)}</FormLabel>
             <Select
-              placeholder='Select Gender of patient'
+              placeholder={t(`nurses:actions.${isEdit ? 'edit' : 'add'}.gender.placeholder`)}
               defaultValue={isEdit ? data?.sexo : ''}
               {...register('sexo', {
                 required: 'This is required',
               })}>
-              <option value='Masculino'>Male</option>
-              <option value='Femenino'>Female</option>
-              <option value='Other'>Other</option>
+              <option value='Masculino'>{t(`nurses:actions.${isEdit ? 'edit' : 'add'}.gender.options.male`)}</option>
+              <option value='Femenino'>{t(`nurses:actions.${isEdit ? 'edit' : 'add'}.gender.options.female`)}</option>
             </Select>
             <FormErrorMessage>{errors.sexo ? errors.sexo.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.telefono)}>
-            <FormLabel>Phone</FormLabel>
+            <FormLabel>{t(`nurses:actions.${isEdit ? 'edit' : 'add'}.phone.label`)}</FormLabel>
             <InputGroup>
               <InputLeftElement pointerEvents='none' children={<BiPhone />} />
               <Input
                 type='tel'
-                placeholder='Phone number'
+                placeholder={t(`nurses:actions.${isEdit ? 'edit' : 'add'}.phone.placeholder`)}
                 defaultValue={isEdit ? data?.telefono : ''}
                 {...register('telefono', {
                   required: 'This is required',
@@ -201,7 +205,7 @@ const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSide
         </FormControl> */}
           <Divider />
           <Button colorScheme='blue' variant='solid' rounded='md' w='full' type='submit'>
-            Submit
+            {t(`nurses:actions.${isEdit ? 'edit' : 'add'}.submit`)}
           </Button>
         </Flex>
       </form>
@@ -211,6 +215,7 @@ const NurseActions = ({ data }: InferGetServerSidePropsType<typeof getServerSide
 
 // This gets called on every request
 export const getServerSideProps: GetServerSideProps<{ data: Nurses | null }> = async (context: any) => {
+  const { locale, defaultLocale } = context;
   try {
     const session = await unstable_getServerSession(context.req, context.res, authOptions);
 
@@ -237,9 +242,9 @@ export const getServerSideProps: GetServerSideProps<{ data: Nurses | null }> = a
     }
 
     // Pass data to the page via props
-    return { props: { data } };
+    return { props: { data, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'nurses'])) } };
   } catch (e) {
-    return { props: { data: null } };
+    return { props: { data: null, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'nurses'])) } };
   }
 };
 

@@ -1,7 +1,19 @@
 import Head from 'next/head';
-import type { PropsWithChildren } from 'react';
+import { createContext, PropsWithChildren } from 'react';
+import { useSocket, useSocketType, msgConfirmNurse, confirmNurse } from '../../hooks/useSocket';
+import { Nurses } from '../../pages/nurses';
+import { Zones } from '../../pages/zones';
 
-export const AppCointainer: React.FunctionComponent<PropsWithChildren> = ({ children }: PropsWithChildren) => {
+export const SocketContext = createContext<useSocketType>({
+  messageBlueCode: { availableZone: {} as Zones, availableNurses: [] as Nurses[] },
+  messageConfirmNurse: { nursesStates: [] as confirmNurse[] },
+  emitBlueCode: (msg: { availableZone: Zones; availableNurses: Nurses[] }) => {},
+  emitConfirmNurse: (msg: msgConfirmNurse) => {},
+});
+
+export const AppContainer: React.FunctionComponent<PropsWithChildren> = ({ children }: PropsWithChildren) => {
+  const socketObject = useSocket();
+
   return (
     <>
       <Head>
@@ -14,7 +26,7 @@ export const AppCointainer: React.FunctionComponent<PropsWithChildren> = ({ chil
         <meta name='msapplication-TileColor' content='#da532c' />
         <meta name='theme-color' content='#ffffff' />
       </Head>
-      {children}
+      <SocketContext.Provider value={socketObject}>{children}</SocketContext.Provider>
     </>
   );
 };

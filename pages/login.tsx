@@ -1,10 +1,12 @@
 import { Center, Flex, FormControl, FormLabel, FormErrorMessage, FormHelperText, Input, Box, Divider, Button, HStack, Heading, Text } from '@chakra-ui/react';
-import type { NextPage } from 'next';
+import type { GetStaticPathsContext, GetStaticProps, GetStaticPropsContext, NextPage } from 'next';
 import { ChangeEvent, useState } from 'react';
 import { Image } from '../components/Image';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import { signIn } from 'next-auth/react';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 type Inputs = {
   username: string;
@@ -13,6 +15,7 @@ type Inputs = {
 
 const Login: NextPage = () => {
   const router = useRouter();
+  const { t } = useTranslation(['common', 'login']);
 
   const {
     register,
@@ -48,16 +51,17 @@ const Login: NextPage = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Flex direction='column' gap='1rem' justifyContent='center' alignItems='flex-start' w='full'>
               <Heading as='h3' size='lg'>
-                Login
+                {t('login:title')}
               </Heading>
               <Text fontSize='md' color='blackAlpha.600'>
-                Logeate para poder ingresar en el sistema
+                {t('login:description')}
               </Text>
               <Divider />
               <FormControl isInvalid={Boolean(errors.username)}>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>{t('login:username.label')}</FormLabel>
                 <Input
                   type='text'
+                  placeholder={t('login:username.placeholder')}
                   {...register('username', {
                     required: 'This is required',
                     minLength: { value: 4, message: 'Minimum length should be 4' },
@@ -67,9 +71,10 @@ const Login: NextPage = () => {
                 <FormErrorMessage>{errors.username ? errors.username.message : ''}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={Boolean(errors.password)}>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>{t('login:password.label')}</FormLabel>
                 <Input
                   type='password'
+                  placeholder={t('login:password.placeholder')}
                   {...register('password', {
                     required: 'This is required',
                     minLength: { value: 4, message: 'Minimum length should be 4' },
@@ -79,7 +84,7 @@ const Login: NextPage = () => {
                 <FormErrorMessage>{errors.password ? errors.password.message : ''}</FormErrorMessage>
               </FormControl>
               <Button colorScheme='blue' variant='solid' rounded='md' w='full' type='submit' isLoading={isSubmitting}>
-                Submit
+                {t('login:submit')}
               </Button>
             </Flex>
           </form>
@@ -90,7 +95,7 @@ const Login: NextPage = () => {
           <Image src={'/img/login-image.jpg'} alt='Background' fill='true' filter='blur(5px)' />
         </Box>
         <Heading as='h1' size='2xl' pos='absolute' top='50%' left='50%' transform='translate(-50%, -50%)' color='white' zIndex='1' textAlign='center'>
-          Bienvenido a <br></br> Medical Manager
+          {t('login:welcome')}
         </Heading>
       </Box>
     </Flex>
@@ -98,3 +103,12 @@ const Login: NextPage = () => {
 };
 
 export default Login;
+
+export const getStaticProps: GetStaticProps = async (context: GetStaticPropsContext) => {
+  const { locale, defaultLocale } = context;
+  return {
+    props: {
+      ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'login'])),
+    },
+  };
+};

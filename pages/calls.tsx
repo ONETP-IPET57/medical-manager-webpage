@@ -9,6 +9,8 @@ import { useSession } from 'next-auth/react';
 import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]';
 import { formatDatetimeToHuman } from '../lib/date';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 export type Call = {
   id_llamada: number;
@@ -32,6 +34,7 @@ export type CallKeys = keyof CallKeysString;
 
 const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session } = useSession();
+  const { t } = useTranslation(['common', 'calls']);
   const [searchFilter, setSearchFilter] = useState<string>('');
   const [searchType, setSearchType] = useState<CallKeys>('id_llamada');
   const [pagination, setPagination] = useState<number>(0);
@@ -96,10 +99,10 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
     <MainContainer>
       <HStack p='0.75rem' gap='1rem' flexWrap='wrap'>
         <Heading as='h2' size='lg'>
-          Calls: {data?.length}
+          {t('calls:title', { length: data?.length })}
         </Heading>
         <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
-          Export
+          {t('common:actions.export')}
         </Button>
 
         <InputGroup bg='white' rounded='lg' shadow='md' flex='1'>
@@ -108,13 +111,13 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
         </InputGroup>
 
         <Select defaultValue='nombre' onChange={(e) => handlerSearchType(e)} bg='white' rounded='lg' shadow='md' flex='1'>
-          <option value='id_llamada'>Numero de llamada</option>
-          <option value='tipo'>Tipo de llamada</option>
-          <option value='fecha_hora_llamada'>Fecha y hora de llamada</option>
-          <option value='fecha_hora_atendido'>Fecha y hora de atendido</option>
-          <option value='origen_llamada'>Origen de la Llamada</option>
-          <option value='nombre_zona'>Nombre de la zona</option>
-          <option value='nombre_paciente'>Paciente</option>
+          <option value='id_llamada'>{t('calls:search-filter.id_call')}</option>
+          <option value='tipo'>{t('calls:search-filter.type')}</option>
+          <option value='fecha_hora_llamada'>{t('calls:search-filter.datetime_call')}</option>
+          <option value='fecha_hora_atendido'>{t('calls:search-filter.datetime_answer')}</option>
+          <option value='origen_llamada'>{t('calls:search-filter.origin')}</option>
+          <option value='nombre_zona'>{t('calls:search-filter.zone_name')}</option>
+          <option value='nombre_paciente'>{t('calls:search-filter.patient_name')}</option>
         </Select>
       </HStack>
       <Grid h='auto' w='full' templateColumns={{ base: 'auto', md: 'repeat(6, 1fr)' }} templateRows='auto' gap='2rem'>
@@ -130,12 +133,12 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
               <GridItem rowSpan={2} colSpan={3} bg='white' p='0.75rem' rounded='lg' key={call.id_llamada} shadow='md'>
                 <Flex direction='column' gap='0.5rem' h='full'>
                   <Heading as='h3' size='md'>
-                    Llamada numero: {call.id_llamada}
+                    {t('calls:item.id_call', { id_call: call.id_llamada })}
                   </Heading>
                   <Divider />
                   <Flex direction='column' w='full' gap='0.5rem'>
                     <Text fontSize='md' fontWeight='bold'>
-                      Zona
+                      {t('calls:item.zone')}
                     </Text>
                     <Text fontSize='md'>
                       {call.nombre_zona} - {call.numero_zona}
@@ -144,7 +147,7 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
                   <Divider />
                   <Flex direction='column' w='full' gap='0.5rem'>
                     <Text fontSize='md' fontWeight='bold'>
-                      Paciente
+                      {t('calls:item.patient')}
                     </Text>
                     <Text fontSize='md'>
                       {call.nombre_paciente} {call.apellido_paciente}
@@ -153,24 +156,24 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
                   <Divider />
                   <Flex direction='column' w='full' gap='0.5rem'>
                     <Text fontSize='md' fontWeight='bold'>
-                      Origen llamada
+                      {t('calls:item.origin')}
                     </Text>
                     <Text fontSize='md'>{call.origen_llamada}</Text>
                   </Flex>
                   <Divider />
                   <Flex direction='column' w='full' gap='0.5rem'>
                     <Text fontSize='md' fontWeight='bold'>
-                      Tipo de llamada
+                      {t('calls:item.type')}
                     </Text>
                     <Text fontSize='md'>{call.tipo}</Text>
                   </Flex>
                   <Divider />
                   <Flex direction='column' w='full' gap='0.5rem' justify='space-between'>
                     <Badge colorScheme='blue' mr='0.5rem'>
-                      Fecha y hora de llamada: {formatDatetimeToHuman(call.fecha_hora_llamada)}
+                      {t('calls:item.datetime_call', { datetime_call: formatDatetimeToHuman(call.fecha_hora_llamada) })}
                     </Badge>
                     <Badge colorScheme='green' mr='0.5rem'>
-                      {call.fecha_hora_atentido ? 'Fecha y hora de atencion: ' + formatDatetimeToHuman(call.fecha_hora_atentido) : 'No atendido'}
+                      {call.fecha_hora_atentido ? t('calls:item.datetime_answer', { datetime_answer: formatDatetimeToHuman(call.fecha_hora_atentido) }) : t('calls:item.not_answer')}
                     </Badge>
                   </Flex>
                   <Divider />
@@ -181,7 +184,7 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
           <GridItem colSpan={6} rowSpan={1} bg='white' rounded='lg' shadow='md'>
             <Flex direction='column' justify='center' align='center' py='4rem' px='2rem'>
               <Text fontSize='lg' fontWeight='bold' textTransform='uppercase'>
-                No se encontraron Llamadas
+                {t('patients:not_found')}
               </Text>
             </Flex>
           </GridItem>
@@ -189,10 +192,10 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
       </Grid>
       <ButtonGroup shadow='md' size='sm' isAttached variant='outline' w='full' colorScheme='blue' bg='white' rounded='lg'>
         <Button w='full' onClick={(e) => handlerPagination(e)} value='prev' disabled={pagination === 0 || !calls[pagination]}>
-          Prev
+          {t('common:actions.previous')}
         </Button>
         <Button w='full' onClick={(e) => handlerPagination(e)} value='next' disabled={pagination === calls.length - 1 || !calls[pagination]}>
-          Next
+          {t('common:actions.next')}
         </Button>
       </ButtonGroup>
     </MainContainer>
@@ -201,6 +204,7 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
 
 // This gets called on every request
 export const getServerSideProps: GetServerSideProps<{ data: Call[] }> = async (context: GetServerSidePropsContext) => {
+  const { locale, defaultLocale } = context;
   try {
     const { req, res } = context;
     const session = await unstable_getServerSession(req, res, authOptions);
@@ -226,9 +230,9 @@ export const getServerSideProps: GetServerSideProps<{ data: Call[] }> = async (c
     console.log(data);
 
     // Pass data to the page via props
-    return { props: { data } };
+    return { props: { data, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'calls'])) } };
   } catch (e: Error | AxiosError | any) {
-    return { props: { data: [] as Call[] } };
+    return { props: { data: [] as Call[], ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'calls'])) } };
   }
 };
 

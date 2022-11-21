@@ -1,0 +1,23 @@
+{
+  "title": "Llamadas: {{length}}",
+  "search-filter": {
+    "id_call": "Numero de llamada",
+    "type": "Tipo de llamada",
+    "datetime_call": "Fecha y hora de llamada",
+    "datetime_answer": "Fecha y hora de atendido",
+    "origin": "Origen de la llamada",
+    "zone_name": "Nombre de zona",
+    "patient_name": "Paciente"
+  },
+  "item": {
+    "id_call": "Llamada numero: {{id_call}}",
+    "zone": "Zona",
+    "patient": "Paciente",
+    "origin": "Origen llamada",
+    "type": "Tipo de llamada",
+    "datetime_call": "Fecha y hora de llamada: {{datetime_call}}",
+    "datetime_answer": "Fecha y hora de atendido: {{datetime_answer}}",
+    "not_answer": "No atendido"
+  },
+  "not_found": "No se encontraron enfermeros/medicos"
+}

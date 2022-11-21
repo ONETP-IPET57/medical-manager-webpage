@@ -1,0 +1,67 @@
+{
+  "title": "Usuarios: {{length}}",
+  "search-filter": {
+    "username": "Nombre de usuario",
+    "email": "Correo electronico",
+    "role": "Rol de usuario"
+  },
+  "item": {
+    "email": "Correo electronico",
+    "role": "Rol de usuario",
+    "roles": {
+      "admin": "Administrador",
+      "user": "Usuario"
+    }
+  },
+  "not_found": "No se encontraron usuarios",
+  "actions": {
+    "add": {
+      "title": "Agregar usuario",
+      "username": {
+        "label": "Nombre de usuario",
+        "placeholder": "Nombre de usuario"
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "Ingrese una contraseña"
+      },
+      "email": {
+        "label": "Correo electronico",
+        "placeholder": "Ingrese su correo"
+      },
+      "role": {
+        "label": "Rol",
+        "placeholder": "Seleccione el rol del usuario",
+        "options": {
+          "admin": "Administrador",
+          "user": "Usuario"
+        }
+      },
+      "submit": "Agregar"
+    },
+    "edit": {
+      "title": "Editar usuario",
+      "username": {
+        "label": "Nombre de usuario",
+        "placeholder": "Nombre de usuario"
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "Ingrese una contraseña"
+      },
+      "email": {
+        "label": "Correo electronico",
+        "placeholder": "Ingrese su correo"
+      },
+      "role": {
+        "label": "Rol",
+        "placeholder": "Seleccione el rol del usuario",
+        "options": {
+          "admin": "Administrador",
+          "user": "Usuario"
+        }
+      },
+      "submit": "Editar"
+    }
+  }
+}

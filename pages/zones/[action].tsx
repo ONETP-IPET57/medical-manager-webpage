@@ -10,6 +10,9 @@ import axios from 'axios';
 import { Nurses } from '../nurses';
 import { Patients } from '../patients';
 import { useSession } from 'next-auth/react';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
+import { BackButton } from '../../components/BackButton';
 
 type Inputs = {
   nombre: string;
@@ -26,6 +29,7 @@ const ZonesActions = ({ data, dataNurses, dataPatients }: InferGetServerSideProp
   const { action, id } = router.query;
   const isEdit = action === 'edit';
   const { data: session } = useSession();
+  const { t } = useTranslation(['common', 'zones']);
 
   console.log(data);
 
@@ -88,17 +92,18 @@ const ZonesActions = ({ data, dataNurses, dataPatients }: InferGetServerSideProp
     <MainContainer>
       <HStack p='0.75rem' spacing='1rem'>
         <Heading as='h2' size='lg'>
-          Zones
+          {t(`zones:actions.${isEdit ? 'edit' : 'add'}.title`)}
         </Heading>
+        <BackButton />
       </HStack>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Flex direction='column' p='1rem' gap='1rem' bg='white' rounded='xl'>
           <FormControl isInvalid={Boolean(errors.nombre)}>
-            <FormLabel>Zone Name</FormLabel>
+            <FormLabel>{t(`zones:actions.${isEdit ? 'edit' : 'add'}.name.title`)}</FormLabel>
             <Input
               type='text'
               defaultValue={isEdit ? data?.nombre : ''}
-              placeholder={'Add a name'}
+              placeholder={t(`zones:actions.${isEdit ? 'edit' : 'add'}.name.placeholder`)}
               {...register('nombre', {
                 required: 'This is required',
                 minLength: { value: 4, message: 'Minimum length should be 4' },
@@ -108,11 +113,11 @@ const ZonesActions = ({ data, dataNurses, dataPatients }: InferGetServerSideProp
             <FormErrorMessage>{errors.nombre ? errors.nombre.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.descripcion)}>
-            <FormLabel>Description</FormLabel>
+            <FormLabel>{t(`zones:actions.${isEdit ? 'edit' : 'add'}.description.title`)}</FormLabel>
             <Input
               type='text'
               defaultValue={isEdit ? data?.descripcion : ''}
-              placeholder={'Add a descripcion'}
+              placeholder={t(`zones:actions.${isEdit ? 'edit' : 'add'}.description.placeholder`)}
               {...register('descripcion', {
                 required: 'This is required',
                 minLength: { value: 4, message: 'Minimum length should be 4' },
@@ -122,11 +127,11 @@ const ZonesActions = ({ data, dataNurses, dataPatients }: InferGetServerSideProp
             <FormErrorMessage>{errors.descripcion ? errors.descripcion.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.numero)}>
-            <FormLabel>Zone Number</FormLabel>
+            <FormLabel>{t(`zones:actions.${isEdit ? 'edit' : 'add'}.number.title`)}</FormLabel>
             <Input
               type='text'
               defaultValue={isEdit ? data?.numero : ''}
-              placeholder={'Add a numero'}
+              placeholder={t(`zones:actions.${isEdit ? 'edit' : 'add'}.number.placeholder`)}
               {...register('numero', {
                 required: 'This is required',
                 pattern: { value: /^[0-9]+$/i, message: 'Numeric characters only' },
@@ -135,35 +140,35 @@ const ZonesActions = ({ data, dataNurses, dataPatients }: InferGetServerSideProp
             <FormErrorMessage>{errors.numero ? errors.numero.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.estado)}>
-            <FormLabel>Estado</FormLabel>
+            <FormLabel>{t(`zones:actions.${isEdit ? 'edit' : 'add'}.state.title`)}</FormLabel>
             <Select
-              placeholder='Select estado'
+              placeholder={t(`zones:actions.${isEdit ? 'edit' : 'add'}.state.placeholder`)}
               defaultValue={isEdit ? data?.estado : ''}
               {...register('estado', {
                 required: 'This is required',
               })}>
-              <option value='0'>Desocupado</option>
-              <option value='1'>Ocupado</option>
+              <option value='0'>{t(`zones:actions.${isEdit ? 'edit' : 'add'}.state.options.inactive`)}</option>
+              <option value='1'>{t(`zones:actions.${isEdit ? 'edit' : 'add'}.state.options.active`)}</option>
             </Select>
             <FormErrorMessage>{errors.estado ? errors.estado.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.id_forma_llamada)}>
-            <FormLabel>Forma de llamada</FormLabel>
+            <FormLabel>{t(`zones:actions.${isEdit ? 'edit' : 'add'}.form_call.title`)}</FormLabel>
             <Select
-              placeholder='Select Patient'
+              placeholder={t(`zones:actions.${isEdit ? 'edit' : 'add'}.form_call.placeholder`)}
               defaultValue={isEdit ? data?.id_forma_llamada : ''}
               {...register('id_forma_llamada', {
                 required: 'This is required',
               })}>
-              <option value='1'>Llamada de paciente</option>
-              <option value='2'>Televisor</option>
+              <option value='1'>{t(`zones:actions.${isEdit ? 'edit' : 'add'}.form_call.options.call`)}</option>
+              <option value='2'>{t(`zones:actions.${isEdit ? 'edit' : 'add'}.form_call.options.message`)}</option>
             </Select>
             <FormErrorMessage>{errors.id_forma_llamada ? errors.id_forma_llamada.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.dni_paciente)}>
-            <FormLabel>Patient</FormLabel>
+            <FormLabel>{t(`zones:actions.${isEdit ? 'edit' : 'add'}.patient.title`)}</FormLabel>
             <Select
-              placeholder='Select Patient'
+              placeholder={t(`zones:actions.${isEdit ? 'edit' : 'add'}.patient.placeholder`)}
               defaultValue={isEdit ? data?.dni_paciente : ''}
               {...register('dni_paciente', {
                 required: 'This is required',
@@ -177,9 +182,9 @@ const ZonesActions = ({ data, dataNurses, dataPatients }: InferGetServerSideProp
             <FormErrorMessage>{errors.dni_paciente ? errors.dni_paciente.message : ''}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.dni_enfermero)}>
-            <FormLabel>Nurse</FormLabel>
+            <FormLabel>{t(`zones:actions.${isEdit ? 'edit' : 'add'}.nurse.title`)}</FormLabel>
             <Select
-              placeholder='Select Nurse'
+              placeholder={t(`zones:actions.${isEdit ? 'edit' : 'add'}.nurse.placeholder`)}
               defaultValue={isEdit ? data?.dni_enfermero : ''}
               {...register('dni_enfermero', {
                 required: 'This is required',
@@ -194,7 +199,7 @@ const ZonesActions = ({ data, dataNurses, dataPatients }: InferGetServerSideProp
           </FormControl>
           <Divider />
           <Button colorScheme='blue' variant='solid' rounded='md' w='full' type='submit' isLoading={isSubmitting}>
-            Submit
+            {t(`zones:actions.${isEdit ? 'edit' : 'add'}.submit`)}
           </Button>
         </Flex>
       </form>
@@ -204,6 +209,7 @@ const ZonesActions = ({ data, dataNurses, dataPatients }: InferGetServerSideProp
 
 // This gets called on every request
 export const getServerSideProps: GetServerSideProps<{ data: Zones | null; dataNurses: Array<Nurses> | null; dataPatients: Array<Patients> | null }> = async (context: any) => {
+  const { locale, defaultLocale } = context;
   try {
     const session = await unstable_getServerSession(context.req, context.res, authOptions);
 
@@ -249,7 +255,7 @@ export const getServerSideProps: GetServerSideProps<{ data: Zones | null; dataNu
     const dataPatients: Array<Patients> = await resPatients.data;
 
     // Pass data to the page via props
-    return { props: { data, dataNurses, dataPatients, session } };
+    return { props: { data, dataNurses, dataPatients, session, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'zones'])) } };
   } catch (e: any) {
     if (e?.response?.status === 401) {
       return {
@@ -259,7 +265,7 @@ export const getServerSideProps: GetServerSideProps<{ data: Zones | null; dataNu
         },
       };
     }
-    return { props: { data: null, dataNurses: null, dataPatients: null } };
+    return { props: { data: null, dataNurses: null, dataPatients: null, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'zones'])) } };
   }
 };
 
