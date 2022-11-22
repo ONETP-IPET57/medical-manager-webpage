@@ -13,6 +13,8 @@ import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
+import ObjectsToCsv from '../../lib/objectToCsv';
+import { saveAs } from 'file-saver';
 
 export type Nurses = {
   dni_enfermero: number;
@@ -110,6 +112,13 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
     }
   };
 
+  const handlerExport = async () => {
+    console.log('Export');
+    const csvFromObject = new ObjectsToCsv(data);
+    var blob = new Blob([await csvFromObject.toString()], { type: 'text/csv;charset=utf-8' });
+    saveAs(blob, 'nurses.csv');
+  };
+
   return (
     <MainContainer>
       <HStack p='0.75rem' gap='1rem' flexWrap='wrap'>
@@ -117,7 +126,7 @@ const Nurses = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>
           {t('nurses:title', { length: data?.length })}
         </Heading>
         <IconButton w='min' fontSize='20px' colorScheme='blue' variant='ghost' bg='white' rounded='lg' aria-label='Add Zone' shadow='md' icon={<IoMdAdd />} onClick={() => handlerAddNurse()} />
-        <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
+        <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md' onClick={() => handlerExport()}>
           {t('common:actions.export')}
         </Button>
 

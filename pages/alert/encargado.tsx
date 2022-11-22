@@ -102,7 +102,7 @@ const Encargado = ({ zones, nurses }: InferGetServerSidePropsType<typeof getServ
       </HStack>
       <Flex w='full' h='md' direction='column' gap='1rem' p='1rem' bg='white' shadow='md' rounded='lg'>
         <Button variant='solid' colorScheme='blue' w='full' h='full' p='2rem' shadow='md' onClick={() => handleBlueCode()}>
-          <Text fontSize='3xl' fontWeight='bold'>
+          <Text fontSize='3xl' fontWeight='bold' wordBreak='break-all' w='full' whiteSpace='break-spaces'>
             {t('alerts:blue_code')}
           </Text>
         </Button>
@@ -110,14 +110,14 @@ const Encargado = ({ zones, nurses }: InferGetServerSidePropsType<typeof getServ
           ? messageBlueCode.availableNurses.map((nurse: Nurses, index: number) => (
               <Flex gap='1rem' key={nurse.dni_enfermero}>
                 <Text textAlign='center' fontSize='xl'>
-                  Medico: {nurse.nombre} {nurse.apellido}: {messageConfirmNurse && messageConfirmNurse.nursesStates && messageConfirmNurse.nursesStates.length > 0 ? messageConfirmNurse.nursesStates.find((nurseState) => nurseState.dni_enfermero === nurse.dni_enfermero.toString())?.state : 'Esperando'}
+                  Medico: {nurse.nombre} {nurse.apellido}: {messageConfirmNurse && messageConfirmNurse.nursesStates && messageConfirmNurse.nursesStates.length > 0 && messageConfirmNurse.nursesStates.find((nurseState) => nurseState.dni_enfermero === nurse.dni_enfermero.toString())?.state ? (`alerts:confirm_states.&{messageConfirmNurse.nursesStates.find((nurseState) => nurseState.dni_enfermero === nurse.dni_enfermero.toString())?.state}`) : t('alerts:confirm_states.pending')}
                 </Text>
               </Flex>
             ))
           : null}
       </Flex>
       <Flex w='full'>
-        <ButtonGroup shadow='md' size='md' isAttached variant='ghost' w='full' colorScheme='blue' bg='white' rounded='lg'>
+        <ButtonGroup shadow='md' size='md' isAttached variant='ghost' w='full' colorScheme='blue' bg='white' rounded='lg' flexWrap='wrap'>
           <Button w='full' onClick={() => router.push('/alert/medico')}>
             {t('alerts:views.to_nurse')}
           </Button>

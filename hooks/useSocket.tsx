@@ -28,7 +28,7 @@ export type useSocketType = {
 export const useSocket = () => {
   const [messageBlueCode, setMessageBlueCode] = useState<msgBlueCode>({} as msgBlueCode);
   const [messageConfirmNurse, setMessageConfirmNurse] = useState<msgConfirmNurse>({ nursesStates: [] as confirmNurse[] });
-  const [socket, setSocket] = useState<Socket>(io('http://localhost:3001'));
+  const [socket, setSocket] = useState<Socket>(io('https://socket.napoleon.tikkix2.com.ar'));
 
   const emitBlueCode = useCallback(
     (msg: msgBlueCode) => {
@@ -49,7 +49,7 @@ export const useSocket = () => {
   );
 
   useEffect(() => {
-    setSocket(io('http://localhost:3001'));
+    setSocket(io('https://socket.napoleon.tikkix2.com.ar'));
 
     socket.on('error', (socket) => {
       console.log(socket);

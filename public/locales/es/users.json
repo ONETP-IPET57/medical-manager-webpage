@@ -34,7 +34,10 @@
         "placeholder": "Seleccione el rol del usuario",
         "options": {
           "admin": "Administrador",
-          "user": "Usuario"
+          "user": "Usuario",
+          "patient": "Paciente",
+          "nurse": "Enfermero",
+          "manager": "Encargado"
         }
       },
       "submit": "Agregar"
@@ -58,7 +61,10 @@
         "placeholder": "Seleccione el rol del usuario",
         "options": {
           "admin": "Administrador",
-          "user": "Usuario"
+          "user": "Usuario",
+          "patient": "Paciente",
+          "nurse": "Enfermero",
+          "manager": "Encargado"
         }
       },
       "submit": "Editar"

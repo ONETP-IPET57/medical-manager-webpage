@@ -11,6 +11,8 @@ import { authOptions } from './api/auth/[...nextauth]';
 import { formatDatetimeToHuman } from '../lib/date';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
+import ObjectsToCsv from '../lib/objectToCsv';
+import { saveAs } from 'file-saver';
 
 export type Call = {
   id_llamada: number;
@@ -95,13 +97,20 @@ const Calls = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
     }
   };
 
+  const handlerExport = async () => {
+    console.log('Export');
+    const csvFromObject = new ObjectsToCsv(data);
+    var blob = new Blob([await csvFromObject.toString()], { type: 'text/csv;charset=utf-8' });
+    saveAs(blob, 'calls.csv');
+  };
+
   return (
     <MainContainer>
       <HStack p='0.75rem' gap='1rem' flexWrap='wrap'>
         <Heading as='h2' size='lg'>
           {t('calls:title', { length: data?.length })}
         </Heading>
-        <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
+        <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md' onClick={() => handlerExport()}>
           {t('common:actions.export')}
         </Button>
 

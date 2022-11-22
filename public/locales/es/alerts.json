@@ -4,5 +4,10 @@
   "views": {
     "to_nurse": "Ir a la vista de enfermero",
     "to_alert": "Ir a la vista de alerta"
+  },
+  "confirm_states": {
+    "cancel": "Cancelado",
+    "confirm": "Confirmado",
+    "pending": "Pendiente"
   }
 }

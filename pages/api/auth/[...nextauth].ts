@@ -1,5 +1,5 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
-import NextAuth from 'next-auth';
+import NextAuth, { Session } from 'next-auth';
 import type { NextAuthOptions } from 'next-auth';
 import axios from 'axios';
 
@@ -58,6 +58,26 @@ export const authOptions: NextAuthOptions = {
         session.accessToken = token.accessToken;
         session.user = token.user;
       }
+      /* try {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/user`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.accessToken}`,
+            Cookie: `access_token_cookie=${session.accessToken}`,
+          },
+        });
+        const user = res.data;
+        console.log(user);
+
+        if (res.status === 200 && user) {
+          session.user = user;
+        } else {
+          return {} as Session;
+        }
+      } catch (e) {
+        console.log(e);
+        return {} as Session;
+      } */
 
       return session;
     },

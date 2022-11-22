@@ -14,6 +14,8 @@ import { authOptions } from './api/auth/[...nextauth]';
 import { Call } from './calls';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { t } = useTranslation(['common', 'reports']);
@@ -195,17 +197,28 @@ const Reports = ({ dataZones, dataNurses, dataPatients, dataCalls }: InferGetSer
     });
   }, [dataCalls, dataZones]);
 
+  const handlerExport = () => {
+    const input = document.getElementById('reports-to-pdf');
+    html2canvas(input as HTMLElement, { windowHeight: 1080, windowWidth: 1920, scale: 1, width: 1408, height: 2736, logging: false }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF();
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 10, canvas.height / 10, 'idk', 'FAST', 0);
+      // pdf.output('dataurlnewwindow');
+      pdf.save('download.pdf');
+    });
+  };
+
   return (
     <MainContainer>
       <HStack p='0.75rem' spacing='1rem'>
         <Heading as='h2' size='lg'>
           {t('reports:title')}
         </Heading>
-        <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md'>
+        <Button w='min' colorScheme='blue' variant='ghost' bg='white' rounded='lg' shadow='md' onClick={() => handlerExport()}>
           {t('common:actions.export')}
         </Button>
       </HStack>
-      <Grid h='auto' w='full' templateColumns={{ base: 'auto', md: 'repeat(6, 1fr)' }} templateRows='auto' gap='2rem'>
+      <Grid h='auto' w='full' templateColumns={{ base: 'auto', md: 'repeat(6, 1fr)' }} templateRows='auto' gap='2rem' id='reports-to-pdf'>
         <GridItem rowSpan={1} colSpan={{ base: 1, md: 3 }} bg='white' p='0.75rem' rounded='lg'>
           <Flex direction='column' gap='1rem' h='full' p='1rem'>
             <Heading as='h3' size='md'>

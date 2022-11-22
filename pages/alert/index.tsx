@@ -12,29 +12,30 @@ const Alert: NextPage = () => {
   const { messageBlueCode, messageConfirmNurse } = socketObject;
   const icons = {
     'confirm': (
-      <Box h='100%' style={{ aspectRatio: 1 / 1 }} bg='green.500' rounded='full' p='6px' key={'check'}>
+      <Box h={{ base: '36px', md: '72px' }} style={{ aspectRatio: 1 / 1 }} bg='green.500' rounded='full' p='6px' key={'check'}>
         <Icon as={BiCheck} w='100%' h='100%' color='white' />
       </Box>
     ),
 
-    'wait': (
-      <Box h='100%' style={{ aspectRatio: 1 / 1 }} bg='orange.500' rounded='full' p='6px' key={'wait'}>
+    'pending': (
+      <Box h={{ base: '36px', md: '72px' }} style={{ aspectRatio: 1 / 1 }} bg='orange.500' rounded='full' p='6px' key={'wait'}>
         <Icon as={BiStopwatch} w='100%' h='100%' color='white' />
       </Box>
     ),
 
     'cancel': (
-      <Box h='100%' style={{ aspectRatio: 1 / 1 }} bg='red.500' rounded='full' p='6px' key={'not'}>
+      <Box h={{ base: '36px', md: '72px' }} style={{ aspectRatio: 1 / 1 }} bg='red.500' rounded='full' p='6px' key={'not'}>
         <Icon as={BiX} w='100%' h='100%' color='white' />
       </Box>
     ),
   };
 
   const getIcon = (nurse: Nurses) => {
-    let icon = icons['wait'];
+    let icon = icons['pending'];
     if (messageConfirmNurse && messageConfirmNurse.nursesStates && messageConfirmNurse.nursesStates.length > 0) {
       const item = messageConfirmNurse.nursesStates.find((nurseState) => nurseState.dni_enfermero === nurse.dni_enfermero.toString());
       if (item) {
+        // @ts-ignore
         icon = icons[item.state];
       }
     }
@@ -47,18 +48,18 @@ const Alert: NextPage = () => {
         <BackButton />
       </Flex>
       <Flex direction='column' justify='center' align='center' h='full' gap='1rem' p='1rem'>
-        <Heading as='h1' size='4xl' textAlign='center' mb='1rem' color='blue.500'>
+        <Heading as='h1' size={{ base: 'xl', md: '4xl' }} textAlign='center' mb='1rem' color='blue.500'>
           {messageBlueCode && Object.keys(messageBlueCode).length > 0 ? 'Alerta codigo azul' : 'Sin alertas'}
         </Heading>
         {messageBlueCode && messageBlueCode.availableZone ? (
-          <Text textAlign='center' fontSize='4xl' fontWeight='bold'>
+          <Text textAlign='center' fontSize={{ base: 'xl', md: '4xl' }} fontWeight='bold'>
             Zona: {messageBlueCode?.availableZone?.nombre}
           </Text>
         ) : null}
         {messageBlueCode && messageBlueCode.availableNurses && messageBlueCode.availableNurses.length > 0
           ? messageBlueCode.availableNurses.map((nurse: Nurses, index: number) => (
               <Flex gap='1rem' w='full' justify='center' key={nurse.dni_enfermero}>
-                <Text textAlign='center' fontSize='4xl' fontWeight='bold'>
+                <Text textAlign='center' fontSize={{ base: 'xl', md: '4xl' }} fontWeight='bold'>
                   Medico: {nurse.nombre} {nurse.apellido}
                 </Text>
                 {getIcon(nurse)}

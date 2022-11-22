@@ -19,7 +19,7 @@
   },
   "roles": {
     "admin": "Administrador",
-    "doctor": "Doctor",
+    "manager": "Encargado",
     "nurse": "Enfermero",
     "patient": "Paciente",
     "user": "Usuario"

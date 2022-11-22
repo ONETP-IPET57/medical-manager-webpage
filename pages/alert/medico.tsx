@@ -2,22 +2,26 @@ import { ButtonGroup, Container, Flex, Heading, Text, Button, Select } from '@ch
 import axios from 'axios';
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from 'next';
 import { unstable_getServerSession } from 'next-auth';
+import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import { ChangeEventHandler, useContext, useEffect, useState } from 'react';
 import { BackButton } from '../../components/BackButton';
 import { SocketContext } from '../../components/layouts/AppContainer';
+import { getAge } from '../../lib/date';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { Nurses } from '../nurses';
+import { Patients } from '../patients';
 
 const time = '30000';
 
-const Medico = ({ nurses }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Medico = ({ nurses, patients }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [timeLeft, setTimeLeft] = useState<string>(time);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [confirm, setConfirm] = useState<boolean>(false);
   const [selectedNurse, setSelectedNurse] = useState<Nurses>({} as Nurses);
   const router = useRouter();
+  const { t } = useTranslation(['common', 'alerts']);
   const socketObject = useContext(SocketContext);
   const { emitConfirmNurse, messageConfirmNurse, messageBlueCode } = socketObject;
 
@@ -50,10 +54,14 @@ const Medico = ({ nurses }: InferGetServerSidePropsType<typeof getServerSideProp
   }, [isActive, timeLeft, confirm]);
 
   useEffect(() => {
+    setSelectedNurse(nurses.find((item) => item.estado === 1) as Nurses);
+  }, [nurses]);
+
+  useEffect(() => {
     if (messageBlueCode && Object.keys(messageBlueCode).length > 0 && messageBlueCode.availableNurses && messageBlueCode.availableNurses.length > 0) {
       messageBlueCode.availableNurses.forEach((nurse: any) => {
         if (nurse.dni_enfermero === selectedNurse.dni_enfermero) {
-          changeState('wait', true);
+          changeState('pending', true);
           setIsActive(true);
           setConfirm(false);
         }
@@ -116,12 +124,14 @@ const Medico = ({ nurses }: InferGetServerSidePropsType<typeof getServerSideProp
       <Heading as='h1' size='3xl' textAlign='center' mb='1rem'>
         Datos del paciente
       </Heading>
-      <Text fontSize='2xl'>Nombre: Juan Perez</Text>
-      <Text fontSize='2xl'>Edad: 25</Text>
-      <Text fontSize='2xl'>Sexo: Masculino</Text>
-      <Text fontSize='2xl'>DNI: 12345678</Text>
-      <Text fontSize='2xl'>Patologias: nn, nn, nn</Text>
-      <Text fontSize='2xl'>Alergias: nn, nn, nn</Text>
+      <Text fontSize='2xl'>
+        Nombre: {patients[0].nombre} {patients[0].apellido}
+      </Text>
+      <Text fontSize='2xl'>Edad: {getAge(patients[0].fecha_nac)}</Text>
+      <Text fontSize='2xl'>Genero: {patients[0].sexo}</Text>
+      <Text fontSize='2xl'>DNI: {patients[0].dni_paciente}</Text>
+      <Text fontSize='2xl'>Patologias: {patients[0].patologia}</Text>
+      <Text fontSize='2xl'>Alergias: {patients[0].alergia}</Text>
       <Button colorScheme='green' onClick={() => router.push('/patients/add')}>
         Completar ficha
       </Button>
@@ -138,6 +148,7 @@ const Medico = ({ nurses }: InferGetServerSidePropsType<typeof getServerSideProp
             w='full'
             h='full'
             shadow='md'
+            defaultValue={nurses.find((item) => item.estado === 1)?.dni_enfermero}
             onChange={(e) => {
               handlerChangeNurse(e);
             }}>
@@ -151,13 +162,15 @@ const Medico = ({ nurses }: InferGetServerSidePropsType<typeof getServerSideProp
       </Flex>
       <Flex justify='center' align='center' p='1rem' gap='1rem' bg='white' shadow='md'>
         {messageBlueCode && messageBlueCode.availableNurses && messageBlueCode.availableNurses.length > 0
-          ? messageBlueCode.availableNurses.map((nurse: Nurses, index: number) => (
-              <Flex gap='1rem' key={nurse.dni_enfermero}>
-                <Text textAlign='center' fontSize='xl'>
-                  Medico: {nurse.nombre} {nurse.apellido}: {messageConfirmNurse && messageConfirmNurse.nursesStates && messageConfirmNurse.nursesStates.length > 0 ? messageConfirmNurse.nursesStates.find((nurseState) => nurseState.dni_enfermero === nurse.dni_enfermero.toString())?.state : 'Esperando'}
-                </Text>
-              </Flex>
-            ))
+          ? messageBlueCode.availableNurses
+              .filter((item) => item.dni_enfermero !== selectedNurse.dni_enfermero)
+              .map((nurse: Nurses, index: number) => (
+                <Flex gap='1rem' key={nurse.dni_enfermero}>
+                  <Text textAlign='center' fontSize={{ base: 'md', md: 'xl' }}>
+                    Medico: {nurse.nombre} {nurse.apellido}: {messageConfirmNurse && messageConfirmNurse.nursesStates && messageConfirmNurse.nursesStates.length > 0 && messageConfirmNurse.nursesStates.find((nurseState) => nurseState.dni_enfermero === nurse.dni_enfermero.toString())?.state ? `alerts:confirm_states.&{messageConfirmNurse.nursesStates.find((nurseState) => nurseState.dni_enfermero === nurse.dni_enfermero.toString())?.state}` : t('alerts:confirm_states.pending')}
+                  </Text>
+                </Flex>
+              ))
           : null}
       </Flex>
       <Container maxW='container.xl' h='full' p='1rem'>
@@ -178,7 +191,7 @@ const Medico = ({ nurses }: InferGetServerSidePropsType<typeof getServerSideProp
 };
 
 // This gets called on every request
-export const getServerSideProps: GetServerSideProps<{ nurses: Array<Nurses> }> = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps: GetServerSideProps<{ nurses: Array<Nurses>; patients: Patients[] }> = async (context: GetServerSidePropsContext) => {
   const { req, res, locale, defaultLocale } = context;
   const session = await unstable_getServerSession(req, res, authOptions);
 
@@ -198,8 +211,15 @@ export const getServerSideProps: GetServerSideProps<{ nurses: Array<Nurses> }> =
   });
   const nurses: Array<Nurses> = await resNurses.data;
 
+  const resPatients = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pacientes`, {
+    headers: {
+      Authorization: `Bearer ${session.accessToken}`,
+    },
+  });
+  const patients: Patients[] = await resNurses.data;
+
   // Pass data to the page via props
-  return { props: { nurses, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'alerts'])) } };
+  return { props: { nurses, patients, ...(await serverSideTranslations((locale as string) || (defaultLocale as string), ['common', 'alerts'])) } };
 };
 
 export default Medico;

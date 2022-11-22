@@ -7,6 +7,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import { MenuItem } from '../types/types';
 import axios from 'axios';
+import { usersRole } from '../pages/users';
 
 export const Menu: React.FC = () => {
   const router = useRouter();
@@ -15,54 +16,60 @@ export const Menu: React.FC = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([] as MenuItem[]);
 
   useEffect(() => {
+    if (!session) {
+      router.push('/login');
+    }
+  }, [session]);
+
+  useEffect(() => {
     setMenuItems([
       {
         icon: <BiHome />,
         title: 'menu.home',
         link: '/',
-        role: 'all',
+        role: ['admin', 'user', 'nurse', 'manager', 'patient'],
       },
       {
         icon: <BiClinic />,
         title: 'menu.zones',
         link: '/zones',
-        role: 'all',
+        role: ['admin', 'user', 'nurse'],
       },
       {
         icon: <BiBody />,
         title: 'menu.patients',
         link: '/patients',
-        role: 'all',
+        role: ['admin', 'user', 'nurse'],
       },
       {
         icon: <TbNurse />,
         title: 'menu.nurses',
         link: '/nurses',
-        role: 'all',
+        role: ['admin', 'user', 'nurse'],
       },
       {
         icon: <BiPhoneCall />,
         title: 'menu.calls',
         link: '/calls',
-        role: 'all',
+        role: ['admin', 'user', 'nurse'],
       },
       {
         icon: <BiDoughnutChart />,
         title: 'menu.statistics',
         link: '/reports',
-        role: 'all',
+        role: ['admin', 'user', 'nurse', 'manager'],
       },
       {
         icon: <BiError />,
         title: 'menu.alerts',
         link: '/alert/encargado',
-        role: 'all',
+        role: ['admin', 'user', 'nurse', 'manager'],
       },
       {
         icon: <BiUser />,
         title: 'menu.users',
         link: '/users',
-        role: 'administrador',
+        role: ['admin'],
       },
       /* {
         icon: <BiCog />,
@@ -97,10 +104,11 @@ export const Menu: React.FC = () => {
         <Heading as='h4' size='lg'>
           {t('menu.welcome', { username: session?.user.username })}
         </Heading>
-        <Badge colorScheme='blue'>{session?.user.role}</Badge>
+        <Badge colorScheme='blue'>{t(`common:roles.${usersRole[parseInt(session?.user?.role as string)]}`)}</Badge>
         <Divider />
         {menuItems.map((item) => {
-          if (item.role === 'all' || item.role === session?.user.role)
+          // item.role.every((item) => item.includes('admin') || item.includes('user') || item.includes('nurse') || item.includes('patient') || item.includes('manager')) ||
+          if (item.role.find((item) => item.includes(usersRole[parseInt(session?.user?.role as string)])))
             return (
               <Button key={item.title} colorScheme='blue' variant='ghost' leftIcon={item.icon} w='full' onClick={() => handlerButtonSection(item.link)}>
                 {t(item.title)}

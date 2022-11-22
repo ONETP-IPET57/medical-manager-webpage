@@ -27,7 +27,7 @@ type UserKeysString = {
 
 export type UserKeys = keyof UserKeysString;
 
-export const usersRole = ['user', 'admin'];
+export const usersRole = ['user', 'admin', 'patient', 'manager', 'nurse'];
 
 const Users = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
@@ -41,6 +41,10 @@ const Users = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>)
   useEffect(() => {
     reloadPagination();
   }, [data, searchFilter, searchType, pagination]);
+
+  useEffect(() => {
+    console.log(session);
+  }, [session]);
 
   console.log(data);
 

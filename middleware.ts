@@ -5,7 +5,7 @@ import { getToken } from 'next-auth/jwt';
 import type { GetTokenParams } from 'next-auth/jwt';
 
 // This function can be marked `async` if using `await` inside
-export async function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest, res: NextResponse) {
   const token = await getToken({ req });
 
   const { origin, pathname } = req.nextUrl;
